@@ -1,0 +1,2824 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Gym Tracker — Fresh Edition</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-display: 'Sora', var(--font-sans);
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --color-bg-main: #070d0b;
+      --color-bg-sidebar: #081310;
+      --color-bg-card: #101c17;
+      --color-bg-input: #17251f;
+      --color-tosca-primary: #3ee08b;
+      --color-tosca-dim: rgba(62, 224, 139, 0.13);
+      --color-gold: #ffb35c;
+      --color-gold-dim: rgba(255, 179, 92, 0.14);
+      --color-text-primary: #edf7f1;
+      --color-text-secondary: #86a196;
+      --color-border: #1b2b24;
+      --color-danger: #ef4444;
+      --color-danger-dim: rgba(239, 68, 68, 0.16);
+      --border-radius-md: 8px;
+      --border-radius-lg: 16px;
+      --border-radius-pill: 999px;
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.35), 0 16px 32px -16px rgba(0,0,0,0.6);
+      --shadow-soft: 0 1px 0 rgba(255,255,255,0.03) inset;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--color-bg-main); background-image: radial-gradient(ellipse 900px 520px at 100% 0%, rgba(62,224,139,0.12), transparent 60%), radial-gradient(ellipse 700px 480px at 0% 100%, rgba(255,179,92,0.08), transparent 60%); background-attachment: fixed; font-family: var(--font-sans); color: var(--color-text-primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    ::selection { background: var(--color-tosca-dim); color: var(--color-tosca-primary); }
+    :focus-visible { outline: 2px solid var(--color-tosca-primary); outline-offset: 2px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--color-tosca-primary); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 10px; }
+    .eyebrow::before { content: ''; width: 7px; height: 7px; background: var(--color-tosca-primary); flex-shrink: 0; }
+
+    /* DESKTOP LAYOUT */
+    .desktop-container { display: flex; min-height: 100vh; width: 100vw; }
+
+    .sidebar {
+  /* Tambahkan 3 baris ini agar sidebar tidak ikut ter-scroll */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  
+  /* Sisa kode di bawah ini tetap sama */
+  width: 264px; background: var(--color-bg-sidebar);
+  border-right: 1px solid var(--color-border);
+  display: flex; flex-direction: column; padding: 2rem 1.5rem; flex-shrink: 0;
+}
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; padding-left: 0.5rem; }
+    .brand i { font-size: 22px; color: var(--color-tosca-primary); }
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-title { font-family: var(--font-display); font-size: 19px; font-weight: 800; letter-spacing: 0.1px; line-height: 1; }
+    .brand-title .accent { color: var(--color-tosca-primary); }
+    .brand-subtitle { font-family: var(--font-mono); font-size: 9px; color: var(--color-text-secondary); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px; }
+
+    .nav-menu { display: flex; flex-direction: column; gap: 2px; flex: 1; counter-reset: navnum; }
+    .tab {
+      padding: 11px 14px; font-size: 13px; cursor: pointer; border: none;
+      background: none; color: var(--color-text-secondary); border-radius: var(--border-radius-md);
+      transition: all 0.15s ease; display: flex; align-items: center; gap: 11px;
+      text-align: left; width: 100%; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+      counter-increment: navnum; border-left: 2px solid transparent;
+    }
+    .tab::before { content: counter(navnum, decimal-leading-zero); font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--color-text-secondary); opacity: 0.6; }
+    .tab i { font-size: 16px; }
+    .tab:hover { background: rgba(255,255,255,0.03); color: var(--color-text-primary); }
+    .tab.active { color: #fff; background: var(--color-tosca-dim); font-weight: 700; border-left-color: var(--color-tosca-primary); }
+    .tab.active::before { color: var(--color-tosca-primary); opacity: 1; }
+
+    .sync-status-box {
+      margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.02);
+      border: 1px solid var(--color-border); border-radius: var(--border-radius-md);
+      font-size: 11.5px; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;
+    }
+    .sync-indicator { width: 7px; height: 7px; border-radius: 50%; background: #888e98; flex-shrink: 0; }
+    .sync-indicator.online { background: var(--color-tosca-primary); filter: drop-shadow(0 0 4px var(--color-tosca-primary)); }
+    .sync-indicator.syncing { background: #ffb35c; filter: drop-shadow(0 0 4px #ffb35c); }
+
+    .backup-panel {
+      margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--color-border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .btn-backup {
+      width: 100%; padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; background: transparent;
+      border: 1px solid var(--color-border); color: var(--color-text-secondary);
+      border-radius: var(--border-radius-md); cursor: pointer; display: flex;
+      align-items: center; gap: 8px; justify-content: center; transition: all 0.2s;
+    }
+    .btn-backup:hover { border-color: var(--color-tosca-primary); color: var(--color-tosca-primary); background: var(--color-tosca-dim); }
+
+    .main-content { flex: 1; padding: 2.5rem; overflow-y: auto; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* SPLASH */
+    .splash-screen {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: var(--color-bg-main); display: flex; flex-direction: column;
+      justify-content: center; align-items: center; z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .splash-screen.fade-out { opacity: 0; visibility: hidden; }
+    .splash-logo { font-size: 60px; color: var(--color-tosca-primary); margin-bottom: 20px; animation: pulse 1.8s infinite ease-in-out; }
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 25px rgba(230, 57, 44, 0.55)); }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* KOMPONEN */
+    .home-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
+    .pr-grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
+    .card { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 1rem; box-shadow: var(--shadow-card); }
+    .page-title { font-family: var(--font-display); font-size: 30px; font-weight: 800; margin-bottom: 1.5rem; color: var(--color-text-primary); letter-spacing: -0.4px; line-height: 1.05; }
+    .ex-name { font-weight: 600; font-size: 15.5px; color: var(--color-text-primary); display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+    .ex-muscle { font-size: 10.5px; color: var(--color-tosca-primary); margin-top: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: var(--border-radius-md); font-size: 11px; background: var(--color-tosca-dim); color: var(--color-tosca-primary); font-weight: 600; }
+    .badge-alt { background: rgba(255,255,255,0.08); color: var(--color-text-secondary); }
+    .tech-note { font-size: 13px; color: var(--color-text-secondary); margin: 12px 0; line-height: 1.5; border-left: 2px solid var(--color-tosca-primary); padding-left: 10px; }
+    .rest-badge { font-size: 11px; color: var(--color-text-secondary); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent; transition: all 0.15s; }
+    .rest-badge:hover { color: var(--color-tosca-primary); border-color: var(--color-tosca-primary); background: var(--color-tosca-dim); }
+    .rest-countdown { font-family: var(--font-mono); font-size: 54px; font-weight: 700; color: var(--color-tosca-primary); letter-spacing: 1px; margin: 10px 0; }
+    .rest-progress-track { height: 6px; background: var(--color-bg-input); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
+    .rest-progress-fill { height: 100%; background: var(--color-tosca-primary); width: 100%; transition: width 1s linear; }
+    .set-container { max-width: 600px; }
+    .set-grid { display: grid; grid-template-columns: 40px 120px 120px auto; gap: 12px; align-items: center; margin-bottom: 8px; }
+    .set-hdr { font-size: 12px; color: var(--color-text-secondary); text-align: center; font-weight: 500; }
+    .set-label { font-size: 13px; color: var(--color-text-secondary); text-align: center; font-weight: 600; }
+    input[type=number], input[type=date], input[type=text], textarea, select {
+      width: 100%; padding: 8px 10px; font-size: 13px; border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md); background: var(--color-bg-input);
+      color: var(--color-text-primary); text-align: center; outline: none; transition: all 0.15s;
+    }
+    input[type=number] { font-family: var(--font-mono); font-weight: 600; }
+    input[type=text], textarea, select { text-align: left; }
+    input[type=number]:focus, input[type=date]:focus, input[type=text]:focus, textarea:focus, select:focus { border-color: var(--color-tosca-primary); box-shadow: 0 0 0 3px var(--color-tosca-dim); }
+    input[type=date] { text-align: left; font-family: var(--font-sans); max-width: 200px; }
+    textarea { text-align: left; resize: vertical; min-height: 60px; font-family: var(--font-sans); }
+    input[type=number].done { border-color: var(--color-gold); background: var(--color-gold-dim); color: var(--color-gold); font-weight: 700; }
+
+    select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+    select option { background: var(--color-bg-card); }
+
+    .chk {
+      background: var(--color-bg-input); border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md); width: 34px; height: 34px; cursor: pointer;
+      font-size: 16px; display: flex; align-items: center; justify-content: center;
+      color: var(--color-text-secondary); transition: all 0.15s;
+    }
+    .chk:hover { border-color: var(--color-tosca-primary); }
+    .chk.done { background: var(--color-gold); border-color: var(--color-gold); color: var(--color-bg-main); font-weight: bold; }
+    .reco-box { margin-top: 12px; padding: 10px 14px; border-radius: var(--border-radius-md); font-size: 13px; font-weight: 600; border-left: 3px solid transparent; max-width: 600px; }
+    .reco-up { background: var(--color-gold-dim); color: var(--color-gold); border-left-color: var(--color-gold); }
+    .reco-rep { background: rgba(96,165,250,0.15); color: #60a5fa; border-left-color: #3b82f6; }
+    .reco-hold { background: rgba(245,182,66,0.15); color: #ffb35c; border-left-color: #f59e0b; }
+    .btn { padding: 9px 18px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid var(--color-border); border-radius: var(--border-radius-md); cursor: pointer; background: var(--color-bg-input); color: var(--color-text-primary); transition: all 0.15s; }
+    .btn:hover { border-color: var(--color-tosca-primary); color: var(--color-tosca-primary); }
+    .btn-primary { background: var(--color-tosca-primary); color: #fff; border-color: var(--color-tosca-primary); font-weight: 700; border-radius: var(--border-radius-pill); padding: 9px 22px; box-shadow: 0 6px 16px -6px rgba(230,57,44,0.55); }
+    .btn-primary::after { content: '→'; margin-left: 8px; }
+    .btn-primary:hover { background: #c92e22; color: #fff; }
+    .btn-danger { background: transparent; border-color: var(--color-danger); color: var(--color-danger); }
+    .btn-danger:hover { background: var(--color-danger); color: #fff; border-color: var(--color-danger); }
+    .btn-delete-log {
+      background: transparent; border: 1px solid rgba(185,28,28,0.35); color: var(--color-danger);
+      padding: 6px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; border-radius: var(--border-radius-md); cursor: pointer;
+      display: flex; align-items: center; gap: 6px; transition: all 0.15s;
+    }
+    .btn-delete-log:hover { background: var(--color-danger); color: #fff; border-color: var(--color-danger); }
+    .btn-download-log {
+      background: transparent; border: 1px solid rgba(230,57,44,0.35); color: var(--color-tosca-primary);
+      padding: 6px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; border-radius: var(--border-radius-md); cursor: pointer;
+      display: flex; align-items: center; gap: 6px; transition: all 0.15s;
+    }
+    .btn-download-log:hover { background: var(--color-tosca-primary); color: #fff; border-color: var(--color-tosca-primary); }
+
+    .day-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 1.5rem; counter-reset: daynum; }
+    .day-btn {
+      padding: 18px 16px 16px; font-size: 14px; border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg); cursor: pointer; background: var(--color-bg-card);
+      color: var(--color-text-primary); display: flex; flex-direction: column; gap: 7px;
+      text-align: left; width: 100%; transition: all 0.2s; box-shadow: var(--shadow-card);
+      counter-increment: daynum; position: relative;
+    }
+    .day-btn::before { content: counter(daynum, decimal-leading-zero); font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: var(--color-tosca-primary); letter-spacing: 0.05em; }
+    .day-btn:hover { border-color: var(--color-tosca-primary); transform: translateY(-2px); }
+    .day-btn.done-day { border-color: var(--color-tosca-primary); background: linear-gradient(135deg, var(--color-tosca-primary), #1c8f5a); }
+    .day-btn.done-day::before { color: rgba(255,255,255,0.75); }
+    .day-btn.done-day .d-name { color: #fff !important; }
+    .day-btn.done-day .d-type { color: rgba(255,255,255,0.75); }
+    .day-btn .d-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: 0.1px; }
+    .day-btn .d-type { font-size: 11.5px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .metric-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .metric { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 1.25rem; text-align: center; box-shadow: var(--shadow-card); }
+    .metric:first-child { background: linear-gradient(135deg, var(--color-tosca-primary), #1c8f5a); border-color: transparent; }
+    .metric:first-child .metric-lbl { color: rgba(255,255,255,0.8); }
+    .metric:first-child .metric-val { color: #fff; }
+    .metric-lbl { font-size: 10.5px; color: var(--color-text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .metric-val { font-family: var(--font-display); font-size: 30px; font-weight: 800; color: var(--color-tosca-primary); font-variant-numeric: tabular-nums; }
+
+    .hist-list-container, .pr-list-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .hist-card { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 0.75rem; box-shadow: var(--shadow-card); }
+    .hist-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+    .hist-ex-block { margin-bottom: 10px; padding-left: 10px; border-left: 2px solid var(--color-border); }
+    .hist-ex-name { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+    .hist-ex-sets { font-family: var(--font-mono); font-size: 12.5px; color: var(--color-text-secondary); margin-top: 3px; }
+    .hist-ex-note { font-size: 12px; color: var(--color-tosca-primary); font-style: italic; margin-top: 2px; }
+    .pr-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--color-bg-sidebar); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: 14px; flex-wrap: wrap; gap: 8px; }
+    .pr-row-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .pr-row-date { font-size: 10.5px; color: var(--color-text-secondary); margin-top: 2px; }
+    .session-bar { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 20px; box-shadow: var(--shadow-card); }
+    .session-save-bar { position: sticky; bottom: 0; z-index: 40; background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 14px 1.25rem; margin-top: 1rem; box-shadow: 0 -12px 24px -10px rgba(0,0,0,0.6); }
+    .session-save-bar .btn { width: 100%; }
+    .empty { text-align: center; padding: 4rem; color: var(--color-text-secondary); font-size: 14px; }
+    .section-hdr { font-size: 11px; font-weight: 700; color: var(--color-tosca-primary); text-transform: uppercase; letter-spacing: .12em; margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+    .section-hdr::before { content: ''; width: 7px; height: 7px; background: var(--color-tosca-primary); flex-shrink: 0; }
+    .sr-only { display: none; }
+
+    /* ===== DASH HERO (fresh) ===== */
+    .dash-hero {
+      position: relative; padding: 1.75rem 2rem; margin-bottom: 1.75rem; overflow: hidden;
+      border-radius: 22px; border: 1px solid var(--color-border);
+      background: linear-gradient(135deg, rgba(62,224,139,0.14), rgba(255,179,92,0.06) 55%, transparent);
+      display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .dash-hero::before {
+      content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px;
+      border-radius: 50%; background: radial-gradient(circle, rgba(62,224,139,0.25), transparent 70%); z-index: 0;
+    }
+    .dash-hero-ghost { display: none; }
+    .dash-hero-title { position: relative; font-family: var(--font-display); font-weight: 800; font-size: 32px; line-height: 1.12; letter-spacing: -0.6px; z-index: 1; }
+    .dash-hero-title .accent { color: var(--color-tosca-primary); }
+    .dash-hero-sub { position: relative; font-size: 13px; color: var(--color-text-secondary); margin-top: 10px; max-width: 420px; line-height: 1.6; z-index: 1; }
+    .dash-hero-badge {
+      position: relative; z-index: 1; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; width: 108px; height: 108px; border-radius: 50%;
+      background: var(--color-bg-card); border: 1px solid var(--color-border); box-shadow: var(--shadow-card);
+    }
+    .dash-hero-badge .hb-num { font-family: var(--font-display); font-weight: 800; font-size: 30px; color: var(--color-tosca-primary); line-height: 1; }
+    .dash-hero-badge .hb-lbl { font-size: 9.5px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; text-align: center; }
+
+    /* ===== FRESH METRIC / INFO CARDS ===== */
+    .metric { display: flex; align-items: center; gap: 12px; text-align: left; }
+    .metric-icon {
+      width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0; display: flex;
+      align-items: center; justify-content: center; font-size: 17px;
+      background: var(--color-tosca-dim); color: var(--color-tosca-primary);
+    }
+    .metric:first-child .metric-icon { background: rgba(255,255,255,0.18); color: #fff; }
+    .metric-body { display: flex; flex-direction: column; gap: 2px; }
+    .metric-lbl { margin-bottom: 0; }
+
+    .info-fresh-card { display: flex; flex-direction: column; gap: 14px; }
+    .info-fresh-row { display: flex; align-items: flex-start; gap: 12px; }
+    .info-fresh-icon {
+      width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0; display: flex;
+      align-items: center; justify-content: center; font-size: 14px; margin-top: 1px;
+    }
+    .info-fresh-text { font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.55; }
+    .info-fresh-text b { color: var(--color-text-primary); }
+
+    /* ===== ANALYTICS ===== */
+    .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .chart-wrap { position: relative; width: 100%; overflow-x: auto; }
+    .vol-muscle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .vol-muscle-name { font-size: 12px; color: var(--color-text-secondary); width: 130px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .vol-bar-track { flex: 1; height: 8px; background: var(--color-border); border-radius: 4px; overflow: hidden; }
+    .vol-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .vol-set-count { font-size: 12px; font-weight: 700; width: 36px; text-align: right; }
+    .vol-group { border: 1px solid var(--color-border); border-radius: var(--border-radius-md); margin-bottom: 10px; overflow: hidden; background: rgba(255,255,255,0.015); }
+    .vol-group-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; user-select: none; transition: background .15s; }
+    .vol-group-header:hover { background: rgba(255,255,255,0.03); }
+    .vol-group-icon { font-size: 16px; flex-shrink: 0; }
+    .vol-group-name { font-size: 12.5px; font-weight: 700; flex-shrink: 0; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .vol-group-total { font-size: 13px; font-weight: 800; color: var(--color-tosca-primary); width: 32px; text-align: right; flex-shrink: 0; }
+    .vol-group-sub { font-size: 10px; color: var(--color-text-secondary); flex-shrink: 0; }
+    .vol-group-chevron { font-size: 14px; color: var(--color-text-secondary); flex-shrink: 0; transition: transform .2s; }
+    .vol-group.open .vol-group-chevron { transform: rotate(180deg); }
+    .vol-group-body { max-height: 0; overflow: hidden; transition: max-height .25s ease, padding .25s ease; padding: 0 14px; }
+    .vol-group.open .vol-group-body { max-height: 400px; padding: 2px 14px 12px; border-top: 1px solid var(--color-border); }
+    .vol-sub-row { margin-bottom: 8px; margin-top: 10px; }
+    .vol-sub-row .vol-muscle-name { width: 110px; font-size: 11.5px; padding-left: 4px; }
+    .measure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .measure-item { display: flex; flex-direction: column; gap: 6px; }
+    .measure-label { font-size: 11px; color: var(--color-text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .measure-delta { font-family: var(--font-mono); font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    .delta-up { background: var(--color-gold-dim); color: var(--color-gold); }
+    .delta-down { background: rgba(185,28,28,0.15); color: var(--color-danger); }
+    .delta-same { background: rgba(255,255,255,0.08); color: var(--color-text-secondary); }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .filter-btn { padding: 5px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; border: 1px solid var(--color-border); border-radius: 20px; background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.2s; }
+    .filter-btn.active { border-color: var(--color-tosca-primary); color: #fff; background: var(--color-tosca-primary); }
+    @media (max-width: 768px) { .analytics-grid { grid-template-columns: 1fr; } }
+
+    /* ===== DELOAD ===== */
+    .deload-card { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; border-radius: var(--border-radius-lg); margin-bottom: 10px; box-shadow: var(--shadow-card); transition: transform .15s, border-color .15s; }
+    .deload-card:hover { transform: translateY(-1px); }
+    .deload-ok { background: var(--color-gold-dim); border: 1px solid rgba(240,180,41,0.3); }
+    .deload-warn { background: rgba(245,182,66,0.08); border: 1px solid rgba(245,182,66,0.3); }
+    .deload-stale { background: rgba(185,28,28,0.08); border: 1px solid rgba(185,28,28,0.3); }
+    .deload-icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: rgba(255,255,255,0.06); }
+    .deload-ok .deload-icon-circle { background: rgba(240,180,41,0.18); }
+    .deload-warn .deload-icon-circle { background: rgba(245,182,66,0.18); }
+    .deload-stale .deload-icon-circle { background: rgba(185,28,28,0.18); }
+    .deload-name { font-size: 13.5px; font-weight: 700; margin-bottom: 5px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .deload-detail { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+    .deload-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-ok { background: var(--color-gold-dim); color: var(--color-gold); }
+    .badge-warn { background: rgba(245,182,66,0.15); color: #ffb35c; }
+    .badge-stale { background: rgba(185,28,28,0.15); color: var(--color-danger); }
+    .deload-tag { display: inline-block; font-size: 10px; font-family: var(--font-mono); background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 6px; color: var(--color-text-secondary); }
+    .deload-section-lbl { font-size: 11px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .08em; margin: 18px 0 8px; }
+    .deload-section-lbl:first-child { margin-top: 0; }
+    .deload-stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .deload-stat { border-radius: var(--border-radius-md); padding: 14px; display: flex; align-items: center; gap: 10px; }
+    .deload-stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .deload-stat-val { font-family: var(--font-display); font-size: 24px; font-weight: 800; line-height: 1; }
+    .deload-stat-lbl { font-size: 10.5px; color: var(--color-text-secondary); margin-top: 3px; }
+    @media (max-width: 640px) { .deload-stat-grid { grid-template-columns: repeat(2,1fr); } }
+    .deload-monthly-banner { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: var(--border-radius-lg); margin-bottom: 1.25rem; box-shadow: var(--shadow-card); flex-wrap: wrap; }
+    .deload-monthly-banner.active { background: linear-gradient(135deg, rgba(185,28,28,0.16), rgba(245,82,66,0.03)); border: 1px solid rgba(255,92,92,0.35); }
+    .deload-monthly-banner.inactive { background: rgba(255,255,255,0.025); border: 1px solid var(--color-border); }
+    .deload-monthly-icon { width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .deload-monthly-banner.active .deload-monthly-icon { background: rgba(255,92,92,0.2); }
+    .deload-monthly-banner.inactive .deload-monthly-icon { background: rgba(255,255,255,0.06); }
+    .deload-monthly-title { font-size: 13.5px; font-weight: 700; margin-bottom: 3px; }
+    .deload-monthly-banner.active .deload-monthly-title { color: #ff8a8a; }
+    .deload-monthly-sub { font-size: 11.5px; color: var(--color-text-secondary); line-height: 1.55; max-width: 480px; }
+    .deload-week-dots { display: flex; gap: 4px; margin-left: auto; flex-shrink: 0; }
+    .deload-week-dot { width: 22px; height: 6px; border-radius: 3px; background: var(--color-border); }
+    .deload-monthly-banner.active .deload-week-dot.filled { background: #ff5c5c; }
+    .deload-monthly-banner.inactive .deload-week-dot.filled { background: var(--color-tosca-primary); }
+    @media (max-width: 640px) { .deload-week-dots { margin-left: 0; } }
+    @media (max-width: 768px) { .nutri-grid { grid-template-columns: 1fr; } }
+
+    /* ===== PROGRAM EDITOR STYLES ===== */
+    .editor-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: start; }
+    .day-list-panel { display: flex; flex-direction: column; gap: 8px; }
+    .day-list-item {
+      padding: 12px 16px; background: var(--color-bg-card); border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md); cursor: pointer; display: flex;
+      justify-content: space-between; align-items: center; transition: all 0.2s;
+    }
+    .day-list-item:hover { border-color: var(--color-tosca-primary); }
+    .day-list-item.active-day { border-color: var(--color-tosca-primary); background: var(--color-tosca-dim); box-shadow: var(--shadow-card); }
+    .day-list-item .day-item-name { font-weight: 600; font-size: 14px; }
+    .day-list-item .day-item-type { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+    .day-list-item .day-item-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      background: transparent; border: none; cursor: pointer; color: var(--color-text-secondary);
+      padding: 4px; border-radius: 4px; font-size: 16px; display: flex; align-items: center;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover { color: var(--color-tosca-primary); }
+    .icon-btn.danger:hover { color: var(--color-danger); }
+
+    .ex-editor-list { display: flex; flex-direction: column; gap: 12px; }
+    .ex-editor-card {
+      background: var(--color-bg-card); border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg); overflow: hidden; box-shadow: var(--shadow-card);
+    }
+    .ex-editor-header {
+      padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .ex-editor-header:hover { background: rgba(255,255,255,0.02); }
+    .ex-editor-body { padding: 16px; border-top: 1px solid var(--color-border); display: none; }
+    .ex-editor-body.open { display: block; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 11px; color: var(--color-text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group input, .form-group select, .form-group textarea { text-align: left; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      z-index: 5000; display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--color-bg-card); border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg); padding: 2rem; width: 90%; max-width: 500px;
+      max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-card);
+    }
+    .modal-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.2px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; }
+
+    .color-options { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .color-dot {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 2px solid transparent; transition: all 0.2s;
+    }
+    .color-dot.selected { border-color: #fff; transform: scale(1.15); }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+      background: var(--color-bg-card); border: 1px solid var(--color-tosca-primary);
+      color: var(--color-tosca-primary); padding: 10px 20px; border-radius: 20px;
+      font-size: 13px; font-weight: 600; z-index: 9999; box-shadow: var(--shadow-card);
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .desktop-container { flex-direction: column; padding-bottom: 80px; }
+      .sidebar {
+        position: fixed; bottom: 0; left: 0; width: 100vw; height: 70px;
+        flex-direction: row; padding: 0 10px; background: rgba(8,19,16,0.92);
+        backdrop-filter: blur(14px); border-right: none; border-top: 1px solid var(--color-border);
+        z-index: 1000; justify-content: space-around; align-items: center;
+      }
+      .brand, .sync-status-box, .backup-panel { display: none !important; }
+      .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; }
+      .tab { flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 6px 0; font-size: 9.5px; text-align: center; color: var(--color-text-secondary); border-radius: 6px; border-left: none; }
+      .tab::before { display: none; }
+      .tab i { font-size: 20px; }
+      .tab.active { background: transparent; color: var(--color-tosca-primary); border-left: none; }
+      .main-content { padding: 1.25rem; }
+      .page-title { font-size: 24px; margin-bottom: 1rem; }
+      .home-grid, .pr-grid-layout { grid-template-columns: 1fr; gap: 1rem; }
+      .day-grid { grid-template-columns: 1fr; gap: 8px; }
+      .metric-row { gap: 8px; }
+      .metric-val { font-size: 22px; }
+      .metric-lbl { font-size: 9px; }
+      .set-grid { grid-template-columns: 25px 1fr 1fr 40px; gap: 6px; }
+      .session-bar { flex-direction: column; align-items: flex-start; gap: 12px; padding: 1rem; }
+      .session-bar button { width: 100%; }
+      .editor-layout { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid-3 { grid-template-columns: 1fr 1fr; }
+      .toast { bottom: 90px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="splash-screen" id="splash">
+  <i class="ti ti-barbell splash-logo"></i>
+  <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--color-text-primary);letter-spacing:-0.3px">Neo-Gym<span style="color:var(--color-tosca-primary)">Tracker</span></div>
+  <div style="font-family:var(--font-mono);font-size:9px;color:var(--color-text-secondary);margin-top:8px;letter-spacing:2px;text-transform:uppercase">Fresh start, heavier plates</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODAL: Tambah/Edit Hari -->
+<div class="modal-overlay" id="modal-day">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-day-title">Tambah Hari Latihan</div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Nama Hari</label>
+      <input type="text" id="md-name" placeholder="Senin">
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Tipe Latihan</label>
+      <input type="text" id="md-type" placeholder="Full Body A, Upper Body, dll">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Warna Label</label>
+      <div class="color-options" id="color-options">
+        <div class="color-dot selected" style="background:#3ee08b" data-color="var(--color-tosca-primary)" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#60a5fa" data-color="#60a5fa" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#a3e635" data-color="#a3e635" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#f97316" data-color="#f97316" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#e879f9" data-color="#e879f9" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#fb7185" data-color="#fb7185" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#ffb35c" data-color="#ffb35c" onclick="selectColor(this)"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-day')">Batal</button>
+      <button class="btn btn-primary" onclick="saveDay()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Tambah/Edit Gerakan -->
+<div class="modal-overlay" id="modal-ex">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-ex-title">Tambah Gerakan</div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Pilih dari Daftar Gerakan</label>
+      <select id="me-preset" onchange="applyPresetExercise(this.value)">
+        <option value="">— Pilih gerakan atau isi manual di bawah —</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Nama Gerakan</label>
+      <input type="text" id="me-name" placeholder="Barbell Back Squat">
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Otot Sasaran</label>
+      <input type="text" id="me-muscle" placeholder="Quads, Glutes, Core">
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Jumlah Set</label>
+        <input type="number" id="me-sets" value="3" min="1" max="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Beban Awal (kg)</label>
+        <input type="number" id="me-weight" value="20" min="0" step="0.5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Rep Awal</label>
+        <input type="number" id="me-targetrep" value="10" min="1" max="120">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rep Maks</label>
+        <input type="number" id="me-maxrep" value="12" min="1" max="120">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lompat Beban (kg)</label>
+        <input type="number" id="me-wjump" value="5" min="0.5" step="0.5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Increment Rep</label>
+        <input type="number" id="me-repinc" value="1" min="1">
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Tempo</label>
+        <input type="text" id="me-tempo" value="3-1-2" placeholder="3-1-2">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipe</label>
+        <select id="me-main">
+          <option value="true">Utama</option>
+          <option value="false">Bonus</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Catatan Teknik</label>
+      <textarea id="me-note" placeholder="Tips form, cue teknik, atau hal yang harus diperhatikan..."></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+      <input type="checkbox" id="me-savelib" checked style="width:auto">
+      <label class="form-label" style="margin:0" for="me-savelib">Simpan gerakan ini ke daftar (bisa dipilih lagi nanti)</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-ex')">Batal</button>
+      <button class="btn btn-primary" onclick="saveExercise()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="desktop-container">
+  <aside class="sidebar">
+    <div class="brand">
+      <i class="ti ti-barbell"></i>
+      <div class="brand-text">
+        <span class="brand-title">Power<span class="accent">Gym</span></span>
+        <span class="brand-subtitle">Fresh Edition · v6</span>
+      </div>
+    </div>
+    <div class="sync-status-box">
+      <div class="sync-indicator" id="sync-dot"></div>
+      <span id="sync-text">Memuat database cloud...</span>
+    </div>
+    <nav class="nav-menu">
+      <button class="tab active" onclick="goPage('home')"><i class="ti ti-home"></i> <span>Dashboard</span></button>
+      <button class="tab" onclick="goPage('session')" id="tab-session"><i class="ti ti-barbell"></i> <span>Sesi</span></button>
+      <button class="tab" onclick="goPage('history')"><i class="ti ti-calendar"></i> <span>Riwayat</span></button>
+      <button class="tab" onclick="goPage('analytics')"><i class="ti ti-chart-line"></i> <span>Analitik</span></button>
+      <button class="tab" onclick="goPage('deload')"><i class="ti ti-activity-heartbeat"></i> <span>Deload</span></button>
+      <button class="tab" onclick="goPage('pr')"><i class="ti ti-trophy"></i> <span>Target</span></button>
+      <button class="tab" onclick="goPage('editor')"><i class="ti ti-settings"></i> <span>Program</span></button>
+    </nav>
+    <div class="backup-panel">
+      <button class="btn-backup" onclick="syncFromCloud()"><i class="ti ti-refresh"></i> Tarik Data Cloud</button>
+      <button class="btn-backup" onclick="exportData()"><i class="ti ti-download"></i> Export Backup</button>
+      <button class="btn-backup" onclick="document.getElementById('import-file').click()"><i class="ti ti-upload"></i> Import Backup</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- HOME -->
+    <div id="page-home" class="page active">
+      <div class="dash-hero">
+        <div>
+          <div class="eyebrow">Ringkasan Latihan</div>
+          <div class="dash-hero-title" id="home-greeting">Selamat Datang<br><span class="accent">Kembali</span></div>
+          <div class="dash-hero-sub">Pantau progres, pilih jadwal hari ini, dan biarkan sistem progresi otomatis yang mengatur kenaikan beban.</div>
+        </div>
+        <div class="dash-hero-badge">
+          <div class="hb-num" id="home-badge-num">—</div>
+          <div class="hb-lbl">Sesi<br>Selesai</div>
+        </div>
+      </div>
+      <div class="home-grid">
+        <div>
+          <div class="metric-row" id="home-metrics"></div>
+          <div class="section-hdr">Pilih Jadwal Hari Ini</div>
+          <div class="day-grid" id="day-grid"></div>
+        </div>
+        <div class="card info-fresh-card">
+          <div style="font-weight:700;color:var(--color-text-primary);font-size:14px">Sistem Progresi Otomatis</div>
+          <div class="info-fresh-row">
+            <div class="info-fresh-icon" style="background:var(--color-tosca-dim);color:var(--color-tosca-primary)"><i class="ti ti-trending-up"></i></div>
+            <div class="info-fresh-text"><b>Naik beban</b> jika semua set menyentuh batas maks rep rata.</div>
+          </div>
+          <div class="info-fresh-row">
+            <div class="info-fresh-icon" style="background:var(--color-gold-dim);color:var(--color-gold)"><i class="ti ti-repeat"></i></div>
+            <div class="info-fresh-text"><b>Naik rep</b> jika melampaui target berjalan saat ini.</div>
+          </div>
+          <div class="info-fresh-row">
+            <div class="info-fresh-icon" style="background:rgba(255,255,255,0.08);color:var(--color-text-secondary)"><i class="ti ti-minus-vertical"></i></div>
+            <div class="info-fresh-text"><b>Pertahankan</b> jika target belum merata di semua set.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSION -->
+    <!-- SESSION -->
+    <div id="page-session" class="page">
+      <div class="session-bar">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%">
+          <div id="sess-title" style="font-weight:600;font-size:16px;color:var(--color-tosca-primary)"></div>
+          <div style="display:flex;align-items:center;gap:8px;background:var(--color-bg-input);padding:4px 10px;border-radius:var(--border-radius-md);border:1px solid var(--color-border)">
+            <label style="font-size:11px;color:var(--color-text-secondary);white-space:nowrap">Tgl:</label>
+            <input type="date" id="session-date" style="border:none;background:none;padding:2px 0;max-width:110px;font-size:12px" onchange="saveDraft()">
+          </div>
+          <button class="icon-btn" onclick="openRestSettings()" title="Pengaturan Timer Istirahat" style="border:1px solid var(--color-border);border-radius:var(--border-radius-md);padding:6px 10px"><i class="ti ti-clock-play" style="margin-right:4px"></i><span style="font-size:11px;font-weight:600">Timer</span></button>
+        </div>
+      </div>
+      <div id="exercise-list"></div>
+      <div id="extra-exercise-list"></div>
+      <button class="btn" style="width:100%;border-style:dashed;margin:0.5rem 0 1.5rem;color:var(--color-gold);border-color:var(--color-gold-dim)" onclick="openAddSessionExercise()">
+        <i class="ti ti-plus" style="margin-right:6px"></i>Tambah Gerakan Cadangan
+      </button>
+
+      <div class="card">
+        <div style="font-weight:700;color:var(--color-text-primary);font-size:14px;margin-bottom:8px">📝 Catatan Kesimpulan Sesi</div>
+        <textarea id="session-note" placeholder="Evaluasi keseluruhan sesi ini: kondisi tubuh, energi, hal yang mau diperbaiki sesi depan, dst." oninput="saveDraft()" style="min-height:90px"></textarea>
+      </div>
+
+      <div class="session-save-bar">
+        <button class="btn btn-primary" onclick="finishSession()" id="btn-save-session">Simpan Sesi & Selesai</button>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="page-history" class="page">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1rem">
+        <div class="page-title" style="margin-bottom:0">Riwayat Sesi Latihan</div>
+        <button class="btn" onclick="cleanOldHistory()" style="border-color:var(--color-danger);color:var(--color-danger)"><i class="ti ti-trash-x" style="margin-right:6px"></i>Bersihkan Riwayat Lama</button>
+      </div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- PR / TARGET -->
+    <div id="page-pr" class="page">
+      <div class="page-title">Metrik Progress & Target</div>
+      <div class="card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(230,57,44,0.08),transparent)">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-0.2px;color:var(--color-tosca-primary);margin-bottom:8px">📐 Zona %1RM</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7">
+          Estimasi 1RM dihitung dari beban dan rep terbaikmu (rumus Epley), lalu dibandingkan ke zona:<br>
+          <b style="color:#888e98">Pemanasan &lt;60%</b> · <b style="color:#3b82f6">Daya Tahan 60-70%</b> · <b style="color:var(--color-tosca-primary)">Hipertrofi 70-80%</b> · <b style="color:#ffb35c">Kekuatan 80-90%</b> · <b style="color:var(--color-danger)">Maksimal 90%+</b><br>
+          Catatan <b style="color:#fff">pakai belt</b> cuma muncul di zona Kekuatan ke atas (80%+) DAN gerakan axial-loaded (squat, deadlift, RDL, overhead press) — gerakan dengan sandaran tubuh seperti seated row, leg press, atau isolasi lengan tidak butuh belt meski beban beratnya tinggi.
+        </div>
+      </div>
+      <div class="pr-grid-layout">
+        <div class="card">
+          <div style="font-weight:600;margin-bottom:16px;font-size:14px;color:var(--color-tosca-primary)">Target Beban Selanjutnya</div>
+          <div id="pr-list" class="pr-list-container"></div>
+        </div>
+        <div class="card">
+          <div style="font-weight:600;margin-bottom:16px;font-size:14px;color:var(--color-tosca-primary)">Monitoring Berat Badan</div>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px">
+            <input type="number" id="bb-input" placeholder="kg" step="0.1" style="text-align:left;padding:8px 12px">
+            <button class="btn btn-primary" onclick="saveBB()">Catat</button>
+          </div>
+          <div id="bb-history" style="font-size:13px;color:var(--color-text-secondary)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="page-analytics" class="page">
+      <div class="page-title">Analitik & Progres</div>
+
+      <!-- BODY MEASUREMENT -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-weight:700;font-size:14px;color:var(--color-tosca-primary)">📏 Body Measurement</div>
+            <div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">Catat ukuran tubuh mingguan — bedain naik otot vs lemak</div>
+          </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" style="font-size:11px;padding:8px 12px" onclick="downloadMeasureCSV()"><i class="ti ti-file-spreadsheet" style="margin-right:6px"></i>CSV</button>
+            <button class="btn" style="font-size:11px;padding:8px 12px" onclick="downloadMeasureJSON()"><i class="ti ti-braces" style="margin-right:6px"></i>JSON</button>
+            <button class="btn btn-primary" onclick="openMeasureForm()"><i class="ti ti-plus" style="margin-right:6px"></i>Catat Ukuran</button>
+          </div>
+        </div>
+        <div id="measure-display" class="measure-grid"></div>
+        <div id="measure-history-mini" style="font-size:12px;color:var(--color-text-secondary)"></div>
+
+        <div style="margin-top:18px;border-top:1px solid var(--color-border);padding-top:16px">
+          <div style="font-weight:700;font-size:13px;color:var(--color-tosca-primary);margin-bottom:10px">📊 Tren per Bagian Tubuh</div>
+          <select id="measure-trend-select" class="ex-select" onchange="renderMeasureTrendChart()">
+            <option value="">-- Pilih bagian tubuh --</option>
+          </select>
+          <div class="chart-wrap" id="measure-trend-wrap" style="margin-top:12px">
+            <div class="empty" style="padding:2rem;font-size:13px">Pilih bagian tubuh untuk lihat trennya.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <!-- GRAFIK PROGRES PER GERAKAN -->
+        <div class="card">
+          <div style="font-weight:700;font-size:14px;color:var(--color-tosca-primary);margin-bottom:4px">📈 Grafik Progres Beban</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:14px">Tren beban per gerakan dari waktu ke waktu</div>
+          <select id="ex-select-chart" class="ex-select" onchange="renderProgressChart()">
+            <option value="">-- Pilih gerakan --</option>
+          </select>
+          <div class="filter-row" id="progress-range-row" style="margin-top:10px">
+            <button class="filter-btn" onclick="setProgressRange(4,this)">Sebulan</button>
+            <button class="filter-btn" onclick="setProgressRange(13,this)">3 Bulan</button>
+            <button class="filter-btn" onclick="setProgressRange(26,this)">6 Bulan</button>
+            <button class="filter-btn" onclick="setProgressRange(52,this)">1 Tahun</button>
+            <button class="filter-btn active" onclick="setProgressRange(null,this)">Semua</button>
+          </div>
+          <div class="chart-wrap" id="progress-chart-wrap">
+            <div class="empty" style="padding:2rem;font-size:13px">Pilih gerakan untuk lihat grafiknya.</div>
+          </div>
+        </div>
+
+        <!-- WEEKLY VOLUME -->
+        <div class="card">
+          <div style="font-weight:700;font-size:14px;color:var(--color-tosca-primary);margin-bottom:4px">💪 Volume Mingguan per Otot</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:14px">Total set per muscle group pada periode terpilih</div>
+          <div class="filter-row" id="vol-range-row">
+            <button class="filter-btn active" onclick="setVolWeek(1,this)">Minggu Ini</button>
+            <button class="filter-btn" onclick="setVolWeek(2,this)">2 Minggu</button>
+            <button class="filter-btn" onclick="setVolWeek(4,this)">Sebulan</button>
+            <button class="filter-btn" onclick="setVolWeek(13,this)">3 Bulan</button>
+            <button class="filter-btn" onclick="setVolWeek(26,this)">6 Bulan</button>
+            <button class="filter-btn" onclick="setVolWeek(52,this)">1 Tahun</button>
+            <button class="filter-btn" onclick="setVolWeek(null,this)">Semua</button>
+          </div>
+          <div id="volume-chart"></div>
+        </div>
+      </div>
+
+      <!-- PROGRESS SUMMARY TABLE -->
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;color:var(--color-tosca-primary);margin-bottom:16px">🏆 Rekapitulasi Progress Semua Gerakan</div>
+        <div id="progress-table" style="font-size:13px"></div>
+      </div>
+    </div>
+
+    <!-- MODAL MEASURE -->
+    <div class="modal-overlay" id="modal-measure">
+      <div class="modal-box">
+        <div class="modal-title">Catat Ukuran Tubuh</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px">Ukur pagi hari sebelum makan, posisi rileks (cm)</div>
+        <div class="measure-grid">
+          <div class="form-group"><label class="form-label">Berat Badan</label><input type="number" id="m-bw" step="0.1" placeholder="kg"></div>
+          <div class="form-group"><label class="form-label">Lingkar Leher</label><input type="number" id="m-neck" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Pundak</label><input type="number" id="m-shoulder" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Dada</label><input type="number" id="m-chest" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Pinggang</label><input type="number" id="m-waist" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Pinggul</label><input type="number" id="m-hip" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Lengan Kiri</label><input type="number" id="m-arml" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Lengan Kanan</label><input type="number" id="m-armr" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Paha Kiri</label><input type="number" id="m-thighl" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Paha Kanan</label><input type="number" id="m-thighr" step="0.1" placeholder="cm"></div>
+          <div class="form-group"><label class="form-label">Lingkar Betis</label><input type="number" id="m-calf" step="0.1" placeholder="cm"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Catatan</label>
+          <input type="text" id="m-note" placeholder="Kondisi hari ini, dll">
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal('modal-measure')">Batal</button>
+          <button class="btn btn-primary" onclick="saveMeasure()">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Rest Timer -->
+    <div class="modal-overlay" id="modal-rest">
+      <div class="modal-box" style="max-width:380px;text-align:center">
+        <div class="modal-title" style="margin-bottom:4px" id="rest-ex-name">⏱ Istirahat</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px" id="rest-set-label">Set selesai — waktunya recovery</div>
+
+        <div class="rest-countdown" id="rest-countdown">01:30</div>
+        <div class="rest-progress-track"><div class="rest-progress-fill" id="rest-progress-bar"></div></div>
+
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:18px">
+          <button class="btn" id="rest-minus-btn" onclick="adjustRestTimer(-15)">-15s</button>
+          <button class="btn btn-primary" id="rest-pause-btn" onclick="pauseResumeRestTimer()" style="min-width:100px">Jeda</button>
+          <button class="btn" id="rest-plus-btn" onclick="adjustRestTimer(15)">+15s</button>
+        </div>
+
+        <div style="border-top:1px solid var(--color-border);padding-top:14px;margin-top:6px">
+          <div style="font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Atur Durasi Manual</div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px">
+            <input type="number" id="rest-manual-input" min="0" max="900" step="5" style="width:90px;text-align:center">
+            <span style="font-size:12px;color:var(--color-text-secondary)">detik</span>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn" id="rest-scope-exercise-btn" onclick="saveRestDuration('exercise')" style="font-size:10.5px">💾 Gerakan Ini Saja</button>
+            <button class="btn" onclick="saveRestDuration('global')" style="font-size:10.5px">🌍 Semua Sesi (Default)</button>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--color-text-secondary);cursor:pointer">
+            <input type="checkbox" id="rest-enabled-toggle" style="width:auto" onchange="toggleRestFeature(this.checked)"> Aktifkan pop-up otomatis
+          </label>
+          <button class="btn" id="rest-skip-btn" onclick="skipRestTimer()">Lewati</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELOAD DETECTOR -->
+    <div id="page-deload" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px">
+        <div>
+          <div class="page-title" style="margin-bottom:4px">Deload Detector</div>
+          <div style="font-size:12px;color:var(--color-text-secondary)">Analisis stagnasi berdasarkan riwayat progressi tiap gerakan</div>
+        </div>
+        <button class="btn" onclick="renderDeload()" style="border-color:var(--color-tosca-primary);color:var(--color-tosca-primary)"><i class="ti ti-refresh" style="margin-right:6px"></i>Refresh</button>
+      </div>
+
+      <div id="deload-monthly"></div>
+
+      <div class="card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(251,191,36,0.06),transparent)">
+        <div style="font-weight:700;font-size:13px;color:#ffb35c;margin-bottom:8px">⚙️ Cara Kerja Detector</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7">
+          <b style="color:#fff">🟢 Progres</b> — beban atau rep naik dalam 3 sesi terakhir.<br>
+          <b style="color:#ffb35c">🟡 Perhatian</b> — tidak ada progres dalam 3–4 sesi terakhir. Pertimbangkan variasi teknik.<br>
+          <b style="color:#ff5c5c">🔴 Stagnasi</b> — tidak ada progres dalam 5+ sesi. Direkomendasikan deload 1 minggu (–40% beban) lalu reset.<br>
+          <b style="color:#ff8a8a">🔁 Deload Bulanan</b> — otomatis aktif tiap minggu ke-4 (akhir bulan), terlepas dari status progres per gerakan.
+        </div>
+      </div>
+
+      <div id="deload-summary" style="margin-bottom:1.5rem"></div>
+      <div id="deload-list"></div>
+    </div>
+
+    <!-- PROGRAM EDITOR -->
+    <div id="page-editor" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px">
+        <div class="page-title" style="margin-bottom:0">Program Editor</div>
+        <button class="btn btn-primary" onclick="openAddDay()"><i class="ti ti-plus" style="margin-right:6px"></i>Tambah Hari</button>
+      </div>
+      <div class="editor-layout">
+        <div>
+          <div class="section-hdr">Hari Latihan</div>
+          <div class="day-list-panel" id="editor-day-list"></div>
+        </div>
+        <div id="editor-ex-panel">
+          <div class="empty" style="padding:3rem">
+            <i class="ti ti-arrow-left" style="font-size:24px;display:block;margin-bottom:8px"></i>
+            Pilih hari latihan untuk mengelola gerakan
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ======================================================
+// KONSTANTA & DATA DEFAULT (hanya dipakai saat inisialisasi pertama)
+// ======================================================
+const DB = 'pgym_imam_v2';
+const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbxG6KeNmY-Sp1LOJLqq4Y6Fl-9rOubpYvjMBRuzJ7vN13Vx3oE2lrWaHcTsCzQQ7uiNvg/exec';
+const DRAFT_KEY = 'pgym_imam_v2_session_draft';
+// Catatan: versi ini full-online — data FINAL (sesi tersimpan, progres, dll) 100% hidup di cloud, tanpa localStorage.
+// Pengecualian tunggal: draft sesi yang SEDANG berjalan (belum ditekan "Simpan Sesi & Selesai") disimpan sementara
+// di localStorage murni sebagai jaring pengaman refresh/close — otomatis terhapus begitu sesi berhasil disimpan ke cloud.
+// Ini tidak pernah ikut proses sync cloud, jadi tidak menyentuh alur save()/syncFromCloud() sama sekali.
+
+const DEFAULT_DAYS = [
+  {id:'senin',name:'Senin',type:'Upper Pull (Back + Rear Delt + Core)',color:'var(--color-tosca-primary)',exercises:[
+    {id:'latpull',name:'Lat Pulldown',muscle:'Lats, Bicep, Punggung Atas',sets:3,maxRep:10,targetRep:8,weight:40,tempo:'3-1-2',note:'Tarik ke dada atas. JANGAN ayun badan. Kembali perlahan.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'cablerow',name:'Seated Cable Row',muscle:'Punggung, Lats, Bicep',sets:4,maxRep:10,targetRep:8,weight:30,tempo:'2-1-3',note:'Tarik ke pusar, tahan 1 detik, kembali PERLAHAN 3 detik. Jaga dada tegak.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'highpulleyreardelt',name:'High-Pulley Cable Rear Delt Fly',muscle:'Posterior Deltoid (Bahu Belakang), Rhomboids, Trapezius Tengah',sets:3,maxRep:15,targetRep:12,weight:5,tempo:'2-1-3',note:'Cable disilang dari posisi tinggi, tarik ke samping dengan siku sedikit tertekuk. Fokus posterior delt, jangan pakai momentum badan.',main:true,weightJump:1.0,repIncrement:1},
+    {id:'plank',name:'Plank (weighted)',muscle:'Core',sets:3,maxRep:60,targetRep:45,weight:15,tempo:'—',note:'Fist plank — Jaga pinggul sejajar. Target min. 45 detik, maks. 60 detik. Lanjutkan progres yang sudah berjalan.',main:true,weightJump:2.5,repIncrement:5}
+  ]},
+  {id:'selasa',name:'Selasa',type:'Arm Specialization (Biceps + Triceps)',color:'#fb7185',exercises:[
+    {id:'inclinedbcurl',name:'Incline DB Bicep Curl',muscle:'Bicep',sets:3,maxRep:12,targetRep:10,weight:7,tempo:'2-1-3',note:'Sandaran miring 45-60°, lengan full stretch di bawah, squeeze bicep di puncak. Siku diam, jangan ayun bahu.',main:true,weightJump:1.0,repIncrement:1},
+    {id:'pushdown',name:'Cable Tricep Pushdown',muscle:'Tricep',sets:3,maxRep:12,targetRep:10,weight:25,tempo:'2-1-3',note:'Siku TETAP di sisi badan. Extend penuh ke bawah, tahan 1 detik.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'cablehammer',name:'Cable Hammer Curl',muscle:'Bicep, Brachialis',sets:3,maxRep:12,targetRep:10,weight:10,tempo:'2-1-3',note:'Pakai rope attachment, grip netral seperti palu. Siku diam di samping badan, full stretch di titik bawah.',main:true,weightJump:1.0,repIncrement:1},
+    {id:'standingcurl',name:'Standing Cable/EZ-Bar Curl',muscle:'Biceps Brachii, Brachialis',sets:3,maxRep:12,targetRep:10,weight:10,tempo:'2-1-3',note:'Siku diam di samping badan, jangan ayun pinggul untuk bantu angkat. Squeeze penuh di titik atas.',main:false,weightJump:2.5,repIncrement:1},
+    {id:'wristcurl',name:'Wrist Curl + Reverse',muscle:'Forearm Flexors & Extensors',sets:2,maxRep:12,targetRep:10,weight:8,tempo:'2-1-2',note:'Wrist Curl → Reverse superset. Kiri dulu.',main:false,weightJump:1.0,repIncrement:1}
+  ]},
+  {id:'rabu',name:'Rabu',type:'Lower Hinge',color:'#fb923c',exercises:[
+    {id:'deadlift',name:'Deadlift',muscle:'Posterior Chain, Core, Grip',sets:3,maxRep:6,targetRep:5,weight:87,tempo:'3-1-1',note:'Bar di mid-foot, hips hinge, chest up. VALSALVA: tarik napas → tahan → buang setelah bar di lantai. Fokus form, rep rendah untuk kualitas gerakan.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'rdl',name:'Barbell Romanian Deadlift',muscle:'Hamstrings, Glutes',sets:3,maxRep:10,targetRep:8,weight:50,tempo:'3-1-2',note:'Hinge pinggul, punggung NETRAL. Turun sampai hamstring tertarik.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'abcrunchmachine',name:'Ab Crunch Machine',muscle:'Rectus Abdominis',sets:3,maxRep:15,targetRep:12,weight:0,tempo:'2-1-2',note:'Duduk tegak, tekuk dari PINGGANG bukan leher. Pause 1 detik saat perut fully contracted, kembali perlahan.',main:true,weightJump:5.0,repIncrement:2}
+  ]},
+  {id:'jumat',name:'Jumat',type:'Upper Push',color:'#c084fc',exercises:[
+    {id:'bench',name:'Barbell Bench Press (Free)',muscle:'Dada, Tricep, Bahu Depan',sets:4,maxRep:8,targetRep:6,weight:37,tempo:'3-1-2',note:'Turunkan ke dada bawah, siku 45°. Squeeze dada di puncak. Minta spotter!',main:true,weightJump:5.0,repIncrement:1},
+    {id:'inclinedbbench',name:'Incline DB Bench Press',muscle:'Upper Chest, Front Delts, Triceps',sets:3,maxRep:10,targetRep:8,weight:15,tempo:'3-1-2',note:'Sandaran 30-45°, DB turun ke sisi dada atas, siku 45° dari badan. Squeeze dada atas di puncak.',main:true,weightJump:2.5,repIncrement:1},
+    {id:'cablelateral',name:'Cable Lateral Raise',muscle:'Deltoid Lateral (Bahu Samping)',sets:4,maxRep:15,targetRep:12,weight:5,tempo:'2-2-3',note:'Tarik dari sisi badan ke samping setinggi bahu, siku sedikit tertekuk, tahan di puncak. Tension cable lebih konstan dibanding dumbbell.',main:true,weightJump:1.0,repIncrement:1},
+    {id:'overheadtricep',name:'Single Arm Overhead Cable Tricep Extension',muscle:'Triceps (Long Head)',sets:3,maxRep:12,targetRep:10,weight:10,tempo:'2-1-3',note:'Siku di samping kepala, extend penuh ke atas, fokus stretch long head tricep. Unilateral — tes ketimpangan kiri-kanan.',main:true,weightJump:1.0,repIncrement:1},
+    {id:'facepull',name:'Face Pull (Unilateral)',muscle:'Rear Delt, Rotator Cuff',sets:4,maxRep:20,targetRep:15,weight:10,tempo:'2-1-3',note:'Versi unilateral, satu tangan dulu. Siku HARUS lebih tinggi dari bahu. Tes ketimpangan kiri-kanan.',main:true,weightJump:1.0,repIncrement:2},
+    {id:'statichold',name:'Static Hold (Grip Isometric)',muscle:'Forearm Flexors (Grip / Flexor Digitorum)',sets:2,maxRep:60,targetRep:40,weight:20,tempo:'—',note:'Pegang dumbbell terberat yang masih bisa digenggam kuat, lengan lurus di samping badan, tahan sampai grip mulai gagal. Mulai 40 detik, naik +10 detik tiap berhasil sampai mentok 60 detik, baru naik beban +2.5kg dan ulang dari 40 detik lagi.',main:false,weightJump:2.5,repIncrement:10}
+  ]},
+  {id:'sabtu',name:'Sabtu',type:'Lower Squat Focus',color:'#f59e0b',exercises:[
+    {id:'squat',name:'Barbell Back Squat',muscle:'Quads, Glutes, Core',sets:4,maxRep:8,targetRep:6,weight:72,tempo:'3-1-2',note:'Kaki selebar bahu, lutut searah jari kaki. Dikerjakan pertama saat masih fresh — fokus penuh ke form.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'legpress',name:'Leg Press Machine',muscle:'Quads, Glutes, Hamstrings',sets:3,maxRep:10,targetRep:8,weight:110,tempo:'3-1-2',note:'Kaki posisi TENGAH plate. Turun sampai 90°. JANGAN kunci lutut di atas.',main:true,weightJump:10.0,repIncrement:1},
+    {id:'legext',name:'Leg Extension Machine',muscle:'Quads (Isolasi)',sets:3,maxRep:12,targetRep:10,weight:40,tempo:'2-1-3',note:'Duduk tegak, extend penuh sampai lutut lurus, tahan 1 detik di puncak, turun perlahan. Jangan hentak.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'legcurl',name:'Leg Curl Machine',muscle:'Hamstrings (Isolasi)',sets:3,maxRep:12,targetRep:10,weight:30,tempo:'2-1-3',note:'Telapak kaki lurus/netral. Full ROM, tahan 1 detik di kontraksi.',main:true,weightJump:5.0,repIncrement:1},
+    {id:'calf',name:'Calf Raise Machine',muscle:'Gastrocnemius, Soleus',sets:3,maxRep:15,targetRep:12,weight:65,tempo:'2-2-3',note:'Pause 2 detik di puncak WAJIB. Full ROM dari bawah ke atas.',main:true,weightJump:5.0,repIncrement:2},
+    {id:'tibia',name:'Tibialis Raise Cable',muscle:'Tibialis Anterior',sets:2,maxRep:20,targetRep:15,weight:10,tempo:'2-1-2',note:'Di tepi step/plate. Angkat ujung kaki ke atas, tahan 1 detik.',main:false,weightJump:2.5,repIncrement:2}
+  ]}
+];
+
+// ======================================================
+// LIBRARY GERAKAN (preset — bisa dipilih langsung, tetap bisa isi manual)
+// ======================================================
+const EXERCISE_LIBRARY_DEFAULT = [
+  // --- Pull / Punggung ---
+  {name:'Seated Cable Row',muscle:'Punggung, Lats, Bicep',sets:4,maxRep:10,targetRep:8,weight:40,tempo:'2-1-3',note:'Tarik ke pusar, tahan 1 detik, kembali PERLAHAN 3 detik. Jaga dada tegak.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Lat Pulldown',muscle:'Lats, Bicep, Punggung Atas',sets:3,maxRep:10,targetRep:8,weight:40,tempo:'3-1-2',note:'Tarik ke dada atas. JANGAN ayun badan. Kembali perlahan.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Single-Arm Cable Row',muscle:'Lats, Punggung (Unilateral)',sets:3,maxRep:10,targetRep:8,weight:15,tempo:'2-1-3',note:'Tension konstan sepanjang ROM. Badan jangan ikut puter. ~40% beban bilateral untuk mulai.',main:false,weightJump:2.5,repIncrement:1},
+  {name:'Face Pull (duduk)',muscle:'Rear Delt, Rotator Cuff',sets:3,maxRep:20,targetRep:15,weight:40,tempo:'2-1-3',note:'DUDUK lebih efektif! Siku HARUS lebih tinggi dari bahu.',main:true,weightJump:5.0,repIncrement:2},
+  {name:'Rear Delt Fly (Cable/Bent-over)',muscle:'Bahu Belakang (Posterior Delt)',sets:3,maxRep:15,targetRep:12,weight:6,tempo:'2-1-3',note:'Badan hinge ke depan, tarik ke samping dengan siku sedikit tertekuk. Jangan pakai momentum badan.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'High-Pulley Cable Rear Delt Fly',muscle:'Posterior Deltoid (Bahu Belakang), Rhomboids, Trapezius Tengah',sets:3,maxRep:15,targetRep:12,weight:5,tempo:'2-1-3',note:'Cable disilang dari posisi tinggi, tarik ke samping dengan siku sedikit tertekuk. Fokus posterior delt, jangan pakai momentum badan.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Face Pull (Unilateral)',muscle:'Rear Delt, Rotator Cuff',sets:4,maxRep:20,targetRep:15,weight:10,tempo:'2-1-3',note:'Versi unilateral, satu tangan dulu. Siku HARUS lebih tinggi dari bahu. Tes ketimpangan kiri-kanan.',main:true,weightJump:1.0,repIncrement:2},
+  // --- Push / Dada, Bahu, Tricep ---
+  {name:'Barbell Bench Press',muscle:'Dada, Tricep, Bahu Depan',sets:4,maxRep:8,targetRep:6,weight:40,tempo:'3-1-2',note:'Turunkan ke dada bawah, siku 45°. Squeeze dada di puncak. Minta spotter!',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Incline Barbell Press',muscle:'Dada Atas, Bahu Depan',sets:3,maxRep:10,targetRep:8,weight:35,tempo:'3-1-2',note:'Sandaran 30-45°. Siku 45°. Fokus squeeze dada atas di puncak.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Incline DB Bench Press',muscle:'Upper Chest, Front Delts, Triceps',sets:3,maxRep:10,targetRep:8,weight:15,tempo:'3-1-2',note:'Sandaran 30-45°, DB turun ke sisi dada atas, siku 45° dari badan. Squeeze dada atas di puncak.',main:true,weightJump:2.5,repIncrement:1},
+  {name:'Seated Chest Fly Machine (Pec Deck)',muscle:'Dada (Isolasi, Middle Chest)',sets:3,maxRep:12,targetRep:10,weight:15,tempo:'2-1-3',note:'Atur sandaran/handle sejajar dada tengah. Buka lengan penuh sesuai ROM mesin, squeeze di titik tengah/depan dada.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Barbell Overhead Press (Seated)',muscle:'Bahu (Deltoid), Tricep',sets:3,maxRep:10,targetRep:8,weight:20,tempo:'2-1-2',note:'Duduk dengan sandaran (bench), bar dari depan bahu, dorong lurus ke atas sampai lockout.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Single-Arm DB Overhead Press',muscle:'Bahu (Deltoid), Tricep (Unilateral)',sets:3,maxRep:10,targetRep:8,weight:8,tempo:'2-1-2',note:'Tes ketimpangan kiri-kanan. Jaga badan tegak, jangan miring bantu dorongan.',main:false,weightJump:1.0,repIncrement:1},
+  {name:'DB Lateral Raise',muscle:'Bahu Samping (Medial Delt)',sets:3,maxRep:15,targetRep:12,weight:6,tempo:'2-2-3',note:'THUMB UP + siku sedikit bengkok. Tekan bahu ke bawah dulu sebelum angkat!',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Cable Lateral Raise',muscle:'Deltoid Lateral (Bahu Samping)',sets:4,maxRep:15,targetRep:12,weight:5,tempo:'2-2-3',note:'Tarik dari sisi badan ke samping setinggi bahu, siku sedikit tertekuk, tahan di puncak. Tension cable lebih konstan dibanding dumbbell.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Cable Tricep Pushdown',muscle:'Tricep (Lateral Head)',sets:3,maxRep:12,targetRep:10,weight:25,tempo:'2-1-3',note:'Siku TETAP di sisi badan. Full ROM sampai dekat dagu di titik atas, extend penuh di bawah.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Reverse Grip Cable Tricep Pushdown',muscle:'Tricep (Medial/Long Head)',sets:2,maxRep:12,targetRep:10,weight:20,tempo:'2-1-3',note:'Telapak tangan menghadap ke atas. Siku tetap di sisi badan, beban lebih ringan dari grip biasa.',main:false,weightJump:2.5,repIncrement:1},
+  {name:'Single-Arm Cable Tricep Pushdown',muscle:'Tricep (Unilateral)',sets:3,maxRep:12,targetRep:8,weight:10,tempo:'2-1-3',note:'Tes ketimpangan kiri-kanan. Siku diam di samping badan, badan jangan ikut puter.',main:false,weightJump:2.5,repIncrement:1},
+  {name:'Single Arm Overhead Cable Tricep Extension',muscle:'Triceps (Long Head)',sets:3,maxRep:12,targetRep:10,weight:10,tempo:'2-1-3',note:'Siku di samping kepala, extend penuh ke atas, fokus stretch long head tricep. Unilateral — tes ketimpangan kiri-kanan.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Serratus Anterior Punch',muscle:'Serratus Anterior (Stabilizer Scapula)',sets:3,maxRep:15,targetRep:12,weight:5,tempo:'2-1-2',note:'Dorong handle/bar lurus ke depan sampai scapula protract, tahan 1 detik. Unilateral.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Cable External Rotation',muscle:'Rotator Cuff (Infraspinatus, Teres Minor)',sets:3,maxRep:15,targetRep:12,weight:3,tempo:'2-1-2',note:'Siku menempel di samping badan, tekuk 90°, putar lengan bawah keluar. Beban ringan, otot kecil.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'DB Shrugs',muscle:'Trapezius (Upper Traps)',sets:3,maxRep:15,targetRep:12,weight:10,tempo:'2-1-2',note:'Angkat bahu lurus ke atas, tahan 1 detik di puncak, turun perlahan. Jangan puter bahu.',main:true,weightJump:2.5,repIncrement:1},
+  // --- Lengan ---
+  {name:'DB Hammer Curl',muscle:'Bicep, Brachialis',sets:3,maxRep:12,targetRep:10,weight:8,tempo:'2-1-3',note:'KIRI dulu (weak side first). Grip netral seperti palu. Full stretch di titik bawah.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Cable Hammer Curl',muscle:'Bicep, Brachialis',sets:3,maxRep:12,targetRep:10,weight:10,tempo:'2-1-3',note:'Pakai rope attachment, grip netral seperti palu. Siku diam di samping badan, full stretch di titik bawah.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Incline DB Bicep Curl',muscle:'Bicep',sets:3,maxRep:12,targetRep:10,weight:7,tempo:'2-1-3',note:'Sandaran miring 45-60°, lengan full stretch di bawah, squeeze bicep di puncak. Siku diam, jangan ayun bahu.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Standing Cable/EZ-Bar Curl',muscle:'Biceps Brachii, Brachialis',sets:3,maxRep:12,targetRep:10,weight:10,tempo:'2-1-3',note:'Siku diam di samping badan, jangan ayun pinggul untuk bantu angkat. Squeeze penuh di titik atas.',main:false,weightJump:2.5,repIncrement:1},
+  {name:'DB Concentration Curl',muscle:'Bicep (Isolasi)',sets:3,maxRep:12,targetRep:10,weight:6,tempo:'2-1-3',note:'Duduk, siku bertumpu di paha bagian dalam, curl penuh dengan kontrol.',main:true,weightJump:1.0,repIncrement:1},
+  {name:'Wrist Curl + Reverse',muscle:'Forearm Flexors & Extensors',sets:2,maxRep:12,targetRep:10,weight:6,tempo:'2-1-2',note:'Wrist Curl → Reverse superset. Kiri dulu.',main:false,weightJump:1.0,repIncrement:1},
+  {name:'Static Hold (Grip Isometric)',muscle:'Forearm Flexors (Grip / Flexor Digitorum)',sets:2,maxRep:60,targetRep:40,weight:10,tempo:'—',note:'Pegang dumbbell terberat yang masih bisa digenggam kuat, lengan lurus di samping badan, tahan sampai grip gagal. Mulai 40 detik, naik +10 detik/berhasil sampai 60 detik, lalu naik beban +2.5kg dan ulang dari 40 detik.',main:false,weightJump:2.5,repIncrement:10},
+  // --- Core ---
+  {name:'Plank (weighted)',muscle:'Core',sets:3,maxRep:60,targetRep:45,weight:7.5,tempo:'—',note:'Fist plank — Jaga pinggul sejajar. Target min. 45 detik, maks. 60 detik.',main:true,weightJump:2.5,repIncrement:5},
+  {name:'Cable Crunch',muscle:'Rectus Abdominis',sets:3,maxRep:15,targetRep:12,weight:40,tempo:'2-1-2',note:'Tekuk dari PINGGANG bukan leher! Pause di bawah saat perut fully contracted.',main:true,weightJump:5.0,repIncrement:2},
+  {name:'Ab Crunch Machine',muscle:'Rectus Abdominis',sets:3,maxRep:15,targetRep:12,weight:0,tempo:'2-1-2',note:'Duduk tegak, tekuk dari PINGGANG bukan leher. Pause 1 detik saat perut fully contracted, kembali perlahan.',main:true,weightJump:5.0,repIncrement:2},
+  // --- Lower Body / Hinge ---
+  {name:'Deadlift',muscle:'Posterior Chain, Core, Grip',sets:3,maxRep:6,targetRep:5,weight:60,tempo:'3-1-1',note:'Bar di mid-foot, hips hinge, chest up. VALSALVA: tarik napas → tahan → buang setelah bar di lantai.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Barbell Romanian Deadlift',muscle:'Hamstrings, Glutes',sets:3,maxRep:10,targetRep:8,weight:55,tempo:'3-1-2',note:'Hinge pinggul, punggung NETRAL. Turun sampai hamstring tertarik.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Barbell Back Squat',muscle:'Quads, Glutes, Core',sets:4,maxRep:8,targetRep:6,weight:60,tempo:'3-1-2',note:'Kaki selebar bahu, lutut searah jari kaki. Dikerjakan pertama saat masih fresh — fokus penuh ke form.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Leg Press Machine',muscle:'Quads, Glutes, Hamstrings',sets:3,maxRep:10,targetRep:8,weight:70,tempo:'3-1-2',note:'Kaki posisi TENGAH plate. Turun sampai 90°. JANGAN kunci lutut di atas.',main:true,weightJump:10.0,repIncrement:1},
+  {name:'Leg Extension Machine',muscle:'Quads (Isolasi)',sets:3,maxRep:12,targetRep:10,weight:40,tempo:'2-1-3',note:'Duduk tegak, extend penuh sampai lutut lurus, tahan 1 detik di puncak, turun perlahan. Jangan hentak.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Leg Curl Machine',muscle:'Hamstrings (Isolasi)',sets:3,maxRep:12,targetRep:10,weight:20,tempo:'2-1-3',note:'Telapak kaki lurus/netral. Full ROM, tahan 1 detik di kontraksi.',main:true,weightJump:5.0,repIncrement:1},
+  {name:'Calf Raise Machine',muscle:'Gastrocnemius, Soleus',sets:3,maxRep:15,targetRep:12,weight:55,tempo:'2-2-3',note:'Pause 2 detik di puncak WAJIB. Full ROM dari bawah ke atas.',main:true,weightJump:5.0,repIncrement:2},
+  {name:'Tibialis Raise Cable',muscle:'Tibialis Anterior',sets:2,maxRep:20,targetRep:15,weight:5,tempo:'2-1-2',note:'Di tepi step/plate. Angkat ujung kaki ke atas, tahan 1 detik.',main:false,weightJump:2.5,repIncrement:2}
+];
+
+// ======================================================
+// STATE (full-online: cloud = satu-satunya sumber data, tanpa localStorage)
+// ======================================================
+let state = { sessions: [], currentProg: {}, bbLog: [], days: DEFAULT_DAYS };
+
+// Pastikan semua field wajib selalu ada di objek state manapun (dari cloud, migrasi, atau import)
+function ensureStateDefaults(s) {
+  if (!s.days) s.days = DEFAULT_DAYS;
+  if (!s.sessions) s.sessions = [];
+  if (!s.currentProg) s.currentProg = {};
+  if (!s.bbLog) s.bbLog = [];
+  if (!s.measurements) s.measurements = [];
+  if (!s.restTimer) s.restTimer = { enabled: true, defaultSeconds: 90 };
+  if (typeof s.restTimer.enabled !== 'boolean') s.restTimer.enabled = true;
+  if (!s.restTimer.defaultSeconds) s.restTimer.defaultSeconds = 90;
+  if (!s.exerciseLibrary) {
+    s.exerciseLibrary = JSON.parse(JSON.stringify(EXERCISE_LIBRARY_DEFAULT));
+  } else {
+    // Tambahkan preset default yang belum ada di library user (merge additive, tidak menimpa yang sudah diedit user)
+    const existingNames = new Set(s.exerciseLibrary.map(x => x.name.toLowerCase()));
+    EXERCISE_LIBRARY_DEFAULT.forEach(def => {
+      if (!existingNames.has(def.name.toLowerCase())) s.exerciseLibrary.push(JSON.parse(JSON.stringify(def)));
+    });
+  }
+  return s;
+}
+ensureStateDefaults(state);
+
+// Migrasi satu kali dari localStorage versi lama (kalau browser ini pernah dipakai untuk versi sebelumnya):
+// data lama dibaca sekali, disiapkan untuk didorong ke cloud, lalu localStorage-nya DIHAPUS PERMANEN
+// supaya tidak ada lagi sisa data lokal yang nyangkut.
+let legacyMigratedState = null;
+try {
+  const oldRaw = localStorage.getItem('pgym_imam_v2') || localStorage.getItem('pgym_imam_v1');
+  if (oldRaw) {
+    const old = JSON.parse(oldRaw);
+    if (old && (old.sessions || old.currentProg)) {
+      legacyMigratedState = ensureStateDefaults({ sessions: old.sessions || [], currentProg: old.currentProg || {}, bbLog: old.bbLog || [], days: old.days || DEFAULT_DAYS, measurements: old.measurements || [], exerciseLibrary: old.exerciseLibrary || null });
+    }
+  }
+} catch(e) {}
+['pgym_imam_v2', 'pgym_imam_v2_draft', 'pgym_imam_v1'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+
+// Simpan/perbarui satu entri di library gerakan (dipanggil saat gerakan baru disimpan)
+function upsertExerciseLibrary(ex) {
+  const idx = state.exerciseLibrary.findIndex(x => x.name.toLowerCase() === ex.name.toLowerCase());
+  const entry = { name: ex.name, muscle: ex.muscle, sets: ex.sets, weight: ex.weight, targetRep: ex.targetRep, maxRep: ex.maxRep, weightJump: ex.weightJump, repIncrement: ex.repIncrement, tempo: ex.tempo, main: ex.main, note: ex.note };
+  if (idx >= 0) state.exerciseLibrary[idx] = entry; else state.exerciseLibrary.push(entry);
+  state.exerciseLibrary.sort((a,b) => a.name.localeCompare(b.name));
+}
+
+
+let activeDayId = null;
+let editorActiveDayId = null;
+let editingDayIndex = null;
+let editingExIndex = null;
+let selectedColor = 'var(--color-tosca-primary)';
+let sessionExtras = []; // gerakan cadangan yang ditambahkan langsung di sesi berjalan, tidak permanen ke template hari
+let sessionOrder = []; // urutan key gerakan ('main-i' / 'extra-id') dalam sesi berjalan, bisa diubah manual
+let exModalMode = 'editor'; // 'editor' = tambah/edit gerakan template hari, 'session' = tambah gerakan cadangan saat sesi
+
+// ======================================================
+// UTILS
+// ======================================================
+function today() { return new Date().toISOString().slice(0, 10); }
+function formatDate(d) {
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('id-ID', { weekday:'short', day:'numeric', month:'short' });
+}
+function genId(name) {
+  return name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'') + '_' + Date.now();
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+function getProg(id, defWeight, defRep) {
+  const p = state.currentProg[id];
+  return p ? { weight: parseFloat(p.weight), targetRep: parseInt(p.targetRep) } : { weight: parseFloat(defWeight), targetRep: parseInt(defRep) };
+}
+
+// ======================================================
+// CLOUD SYNC
+// ======================================================
+function updateSyncStatus(status, text) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  if (!dot || !txt) return;
+  dot.className = 'sync-indicator ' + status;
+  txt.textContent = text;
+}
+async function syncFromCloud() {
+  if (CLOUD_URL.includes('GANTI')) { updateSyncStatus('offline','Cloud belum diatur'); return; }
+  updateSyncStatus('syncing','Mengambil data cloud...');
+  try {
+    // cache:'no-store' + parameter waktu unik supaya browser TIDAK PERNAH
+    // menyajikan response GET lama dari cache saat halaman di-refresh —
+    // ini bisa bikin data yang baru saja tersimpan "kelihatan hilang".
+    const res = await fetch(CLOUD_URL + (CLOUD_URL.includes('?') ? '&' : '?') + '_t=' + Date.now(), { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      const adaData = data && (data.sessions || data.currentProg);
+      if (adaData) {
+        state = ensureStateDefaults(data);
+        renderHome();
+        updateSyncStatus('online', 'Cloud tersinkron');
+      } else if (legacyMigratedState) {
+        // Cloud masih kosong tapi ada data lama dari localStorage → dorong sekali ke cloud
+        state = legacyMigratedState;
+        legacyMigratedState = null;
+        renderHome();
+        await save();
+        showToast('✅ Data lama berhasil dipindahkan ke cloud');
+      } else {
+        updateSyncStatus('online', 'Cloud kosong, siap dipakai');
+      }
+    } else {
+      updateSyncStatus('offline','Cloud tidak merespons');
+    }
+  } catch(e) { updateSyncStatus('offline','Tidak ada koneksi ke cloud'); }
+}
+
+// ======================================================
+// SAVE (full-online — setiap simpan langsung POST ke cloud, tidak ada localStorage)
+// ======================================================
+async function save() {
+  if (CLOUD_URL.includes('GANTI')) {
+    updateSyncStatus('offline','Cloud belum diatur — data BELUM tersimpan');
+    showToast('⚠️ Cloud belum diatur, data belum tersimpan!');
+    return;
+  }
+  updateSyncStatus('syncing','Menyimpan ke cloud...');
+  try {
+    await fetch(CLOUD_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'save', state }) });
+    updateSyncStatus('online','Tersimpan ke cloud');
+  } catch(e) {
+    updateSyncStatus('offline','Gagal menyimpan — cek koneksi');
+    showToast('⚠️ Gagal menyimpan ke cloud, cek koneksi internet');
+  }
+}
+// Alias untuk kompatibilitas pemanggilan lama
+async function syncToCloud() { return save(); }
+function exportData() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute("href", dataStr);
+  a.setAttribute("download", `power_gym_backup_${today()}.json`);
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (imported.sessions && imported.currentProg) {
+        if (!imported.days) imported.days = DEFAULT_DAYS;
+        state = ensureStateDefaults(imported); save();
+        showToast('✅ Backup dipulihkan!');
+        location.reload();
+      }
+    } catch(err) { alert("❌ File tidak valid."); }
+  };
+  reader.readAsText(file);
+}
+
+// ======================================================
+// NAVIGASI
+// ======================================================
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const tabMap = { home:0, session:1, history:2, analytics:3, deload:4, pr:5, editor:6 };
+  const activeTab = document.querySelectorAll('.tab')[tabMap[id]];
+  if (activeTab) activeTab.classList.add('active');
+  if (id === 'home') renderHome();
+  if (id === 'history') renderHistory();
+  if (id === 'pr') renderPR();
+  if (id === 'analytics') renderAnalytics();
+  if (id === 'deload') renderDeload();
+  if (id === 'editor') renderEditor();
+}
+
+// ======================================================
+// HOME
+// ======================================================
+function renderHome() {
+  const total = state.sessions.length;
+  const weeks = total > 0 ? Math.ceil(total / 4) : 0;
+  const lastBB = state.bbLog && state.bbLog.length > 0 ? state.bbLog[state.bbLog.length-1].bb : '—';
+
+  const hr = new Date().getHours();
+  const timeGreet = hr < 11 ? 'Selamat Pagi' : hr < 15 ? 'Selamat Siang' : hr < 18 ? 'Selamat Sore' : 'Selamat Malam';
+  const greetEl = document.getElementById('home-greeting');
+  if (greetEl) greetEl.innerHTML = `${timeGreet},<br><span class="accent">Saatnya Latihan</span>`;
+  const badgeEl = document.getElementById('home-badge-num');
+  if (badgeEl) badgeEl.textContent = total;
+
+  document.getElementById('home-metrics').innerHTML = `
+    <div class="metric"><div class="metric-icon"><i class="ti ti-flame"></i></div><div class="metric-body"><div class="metric-lbl">Total Sesi</div><div class="metric-val">${total}</div></div></div>
+    <div class="metric"><div class="metric-icon"><i class="ti ti-calendar-week"></i></div><div class="metric-body"><div class="metric-lbl">Minggu</div><div class="metric-val">${weeks||'—'}</div></div></div>
+    <div class="metric"><div class="metric-icon"><i class="ti ti-scale"></i></div><div class="metric-body"><div class="metric-lbl">Berat BB</div><div class="metric-val">${lastBB}${lastBB!=='—'?' kg':''}</div></div></div>`;
+  const doneIds = new Set(state.sessions.map(s => s.dayId));
+  document.getElementById('day-grid').innerHTML = state.days.map(d => `
+    <button class="day-btn${doneIds.has(d.id)?' done-day':''}" onclick="startSession('${d.id}')">
+      <span class="d-name" style="color:${d.color}">${d.name}</span>
+      <span class="d-type">${d.type}</span>
+    </button>`).join('');
+}
+
+// ======================================================
+// SESSION
+// ======================================================
+function startSession(dayId, restore) {
+  activeDayId = dayId;
+  sessionExtras = (restore && restore.extras) ? restore.extras : [];
+  const day = state.days.find(d => d.id === dayId);
+  document.getElementById('sess-title').textContent = `${day.name} - ${day.type}`;
+  document.getElementById('session-date').value = (restore && restore.date) || today();
+  document.getElementById('session-note').value = (restore && restore.sessionNote) || '';
+  if (restore && restore.order && restore.order.length) {
+    sessionOrder = restore.order;
+  } else {
+    sessionOrder = day.exercises.map((_, ei) => 'main-' + ei).concat(sessionExtras.map(ex => 'extra-' + ex.id));
+  }
+  renderSessionList();
+  goPage('session');
+  if (restore && restore.fields) applyDraftFields(restore.fields);
+}
+
+// Ambil daftar {ex, key} sesuai urutan sessionOrder saat ini (dipakai render, simpan draft, & simpan sesi final)
+function getSessionExerciseList() {
+  return sessionOrder.map(key => ({ ex: resolveExercise(key), key })).filter(item => item.ex);
+}
+
+function renderSessionList() {
+  const list = getSessionExerciseList();
+  document.getElementById('exercise-list').innerHTML = list.map(({ex, key}, idx) =>
+    renderSessionExerciseCard(ex, key, idx, list.length)
+  ).join('');
+}
+
+function moveSessionExercise(key, dir) {
+  const idx = sessionOrder.indexOf(key);
+  const newIdx = idx + dir;
+  if (idx === -1 || newIdx < 0 || newIdx >= sessionOrder.length) return;
+  const snapshot = collectSessionFields();
+  const tmp = sessionOrder[idx];
+  sessionOrder[idx] = sessionOrder[newIdx];
+  sessionOrder[newIdx] = tmp;
+  renderSessionList();
+  applyDraftFields(snapshot);
+  saveDraft();
+}
+
+// ======================================================
+// AUTOSAVE DRAFT SESI (biar data tidak hilang saat refresh/tertutup)
+// ======================================================
+function collectSessionFields() {
+  const fields = {};
+  getSessionExerciseList().forEach(({ex, key}) => {
+    const sets = [];
+    for (let s = 0; s < ex.sets; s++) {
+      const repEl = document.getElementById(`rep-${key}-${s}`);
+      const wtEl = document.getElementById(`wt-${key}-${s}`);
+      const chkEl = document.getElementById(`chk-${key}-${s}`);
+      sets.push({
+        rep: repEl ? repEl.value : '',
+        wt: wtEl ? wtEl.value : '',
+        checked: chkEl ? chkEl.classList.contains('done') : false
+      });
+    }
+    const noteEl = document.getElementById(`note-${key}`);
+    fields[key] = { sets, note: noteEl ? noteEl.value : '' };
+  });
+  return fields;
+}
+
+// Draft sesi berjalan: disimpan di variabel memori DAN di-mirror ke localStorage sebagai jaring pengaman
+// refresh/close. Terpisah total dari state cloud — tidak pernah dikirim ke server.
+let sessionDraft = null;
+
+function saveDraft() {
+  if (!activeDayId) return;
+  const day = state.days.find(d => d.id === activeDayId);
+  if (!day) return;
+  const fields = collectSessionFields();
+  const dateEl = document.getElementById('session-date');
+  const noteEl = document.getElementById('session-note');
+  sessionDraft = { dayId: activeDayId, date: dateEl ? dateEl.value : today(), extras: sessionExtras, order: sessionOrder, fields, sessionNote: noteEl ? noteEl.value : '', savedAt: Date.now() };
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(sessionDraft)); } catch(e) {}
+}
+
+function clearDraft() {
+  sessionDraft = null;
+  try { localStorage.removeItem(DRAFT_KEY); } catch(e) {}
+}
+
+function applyDraftFields(fields) {
+  Object.keys(fields).forEach(key => {
+    const f = fields[key];
+    (f.sets || []).forEach((s, si) => {
+      const repEl = document.getElementById(`rep-${key}-${si}`);
+      const wtEl = document.getElementById(`wt-${key}-${si}`);
+      const chkEl = document.getElementById(`chk-${key}-${si}`);
+      if (repEl && s.rep !== '') { repEl.value = s.rep; repEl.classList.add('done'); }
+      if (wtEl && s.wt !== '') wtEl.value = s.wt;
+      if (chkEl && s.checked) { chkEl.classList.add('done'); if (repEl) repEl.classList.add('done'); }
+    });
+    const noteEl = document.getElementById(`note-${key}`);
+    if (noteEl && f.note) noteEl.value = f.note;
+    updateReco(key);
+  });
+}
+
+function tryRestoreDraft() {
+  if (!sessionDraft) {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) sessionDraft = JSON.parse(raw);
+    } catch(e) {}
+  }
+  const draft = sessionDraft;
+  if (!draft || !draft.dayId) return;
+  const day = state.days.find(d => d.id === draft.dayId);
+  if (!day) { clearDraft(); return; }
+  const savedTime = draft.savedAt ? new Date(draft.savedAt).toLocaleString('id-ID') : '';
+  const resume = confirm(`Ditemukan sesi "${day.name}" yang belum tersimpan${savedTime ? ' (terakhir diketik ' + savedTime + ')' : ''}. Lanjutkan sesi ini?`);
+  if (!resume) { clearDraft(); return; }
+  startSession(draft.dayId, { date: draft.date, extras: draft.extras || [], order: draft.order || [], fields: draft.fields || {}, sessionNote: draft.sessionNote || '' });
+}
+
+// Key format: 'main-<index>' untuk gerakan template hari, 'extra-<id>' untuk gerakan cadangan sesi
+function resolveExercise(key) {
+  const sep = key.indexOf('-');
+  const kind = key.slice(0, sep);
+  const rest = key.slice(sep + 1);
+  if (kind === 'extra') return sessionExtras.find(e => e.id === rest);
+  const day = state.days.find(d => d.id === activeDayId);
+  return day ? day.exercises[parseInt(rest)] : null;
+}
+
+function renderSessionExerciseCard(ex, key, idx, total) {
+  const prog = getProg(ex.id, ex.weight, ex.targetRep);
+  const isExtra = key.startsWith('extra-');
+  const hasOrder = typeof idx === 'number';
+  let setsHtml = `<div class="set-container"><div class="set-grid">
+    <div class="set-label">#</div>
+    <div class="set-hdr">${ex.id.includes('plank') ? 'Detik' : 'Reps'}</div>
+    <div class="set-hdr">Beban</div>
+    <div></div>
+  </div>`;
+  for (let s = 0; s < ex.sets; s++) {
+    setsHtml += `<div class="set-grid">
+      <div class="set-label">${s+1}</div>
+      <input type="number" id="rep-${key}-${s}" min="0" max="120" placeholder="${prog.targetRep}" oninput="onSetChange('${key}',${s})">
+      <input type="number" id="wt-${key}-${s}" min="0" max="300" step="0.5" value="${prog.weight}" oninput="onSetChange('${key}',${s})">
+      <button class="chk" id="chk-${key}-${s}" onclick="toggleCheck('${key}',${s})"><i class="ti ti-check"></i></button>
+    </div>`;
+  }
+  setsHtml += `</div>`;
+  const reorderHtml = hasOrder ? `<div style="display:flex;flex-direction:column;gap:2px">
+      <button class="icon-btn" onclick="moveSessionExercise('${key}',-1)" title="Pindah ke atas" ${idx===0?'disabled style="opacity:0.3"':''}><i class="ti ti-chevron-up"></i></button>
+      <button class="icon-btn" onclick="moveSessionExercise('${key}',1)" title="Pindah ke bawah" ${idx===total-1?'disabled style="opacity:0.3"':''}><i class="ti ti-chevron-down"></i></button>
+    </div>` : '';
+  return `<div class="card" id="card-${key}">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:6px">
+      <div style="display:flex;align-items:center;gap:8px">
+        ${reorderHtml}
+        <div class="ex-name">${hasOrder ? `<span style="color:var(--color-text-secondary);font-weight:400">${idx+1}.</span> ` : ''}${ex.name}${ex.main?'<span class="badge">Utama</span>':'<span class="badge badge-alt">Bonus</span>'}${isExtra ? '<span class="badge" style="background:var(--color-gold-dim);color:var(--color-gold)">Cadangan</span>' : ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:11px;color:var(--color-text-secondary);background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px">Tempo: ${ex.tempo}</div>
+        <div class="rest-badge" id="restbadge-${key}" title="Durasi istirahat gerakan ini — klik untuk atur" onclick="openRestTimer('${key}', false)"><i class="ti ti-clock" style="font-size:12px"></i>${ex.restTime ? ex.restTime : ((state.restTimer && state.restTimer.defaultSeconds) || 90)}s</div>
+        ${isExtra ? `<button class="icon-btn danger" onclick="removeExtraExercise('${ex.id}')" title="Hapus gerakan cadangan"><i class="ti ti-trash"></i></button>` : ''}
+      </div>
+    </div>
+    <div class="ex-muscle">${ex.muscle}</div>
+    <div class="tech-note">Target: ${prog.targetRep} · Maks: ${ex.maxRep}${ex.id.includes('plank')?'s':''} · +${ex.weightJump}kg · ${ex.note}</div>
+    ${setsHtml}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <div id="reco-${key}"></div>
+      <div id="zone-${key}"></div>
+    </div>
+    <div style="margin-top:10px"><textarea placeholder="Catatan evaluasi gerakan..." id="note-${key}" oninput="saveDraft()"></textarea></div>
+  </div>`;
+}
+
+function removeExtraExercise(id) {
+  if (!confirm('Hapus gerakan cadangan ini dari sesi?')) return;
+  const snapshot = collectSessionFields();
+  sessionExtras = sessionExtras.filter(e => e.id !== id);
+  sessionOrder = sessionOrder.filter(k => k !== 'extra-' + id);
+  renderSessionList();
+  applyDraftFields(snapshot);
+  saveDraft();
+}
+
+function onSetChange(key, si) {
+  const rep = document.getElementById(`rep-${key}-${si}`).value;
+  document.getElementById(`rep-${key}-${si}`).classList.toggle('done', !!rep);
+  updateReco(key);
+  saveDraft();
+}
+function toggleCheck(key, si) {
+  const chkEl = document.getElementById(`chk-${key}-${si}`);
+  const willBeDone = !chkEl.classList.contains('done'); // status SETELAH toggle (baru dicentang / dibatalkan)
+  chkEl.classList.toggle('done');
+  document.getElementById(`rep-${key}-${si}`).classList.toggle('done');
+  updateReco(key);
+  saveDraft();
+  // Hanya munculkan pop-up istirahat saat set baru DICENTANG (bukan saat dibatalkan)
+  if (willBeDone && state.restTimer && state.restTimer.enabled) {
+    openRestTimer(key, true);
+  }
+}
+
+// ======================================================
+// REST TIMER (pop-up istirahat antar set)
+// ======================================================
+let restTimerState = { key: null, seconds: 90, remaining: 90, intervalId: null, paused: true };
+
+function getRestSeconds(key) {
+  const ex = resolveExercise(key);
+  if (ex && typeof ex.restTime === 'number' && ex.restTime > 0) return ex.restTime;
+  return (state.restTimer && state.restTimer.defaultSeconds) || 90;
+}
+
+function restoreRestModalControls() {
+  ['rest-pause-btn', 'rest-minus-btn', 'rest-plus-btn', 'rest-scope-exercise-btn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+  const skipBtn = document.getElementById('rest-skip-btn');
+  if (skipBtn) skipBtn.textContent = 'Lewati';
+}
+
+// key = 'main-i' / 'extra-id'. autoStart=true → langsung hitung mundur (dipicu dari centang set).
+// autoStart=false → dibuka untuk diatur manual saja (dipicu dari klik badge durasi), tidak langsung berjalan.
+function openRestTimer(key, autoStart) {
+  const ex = resolveExercise(key);
+  if (!ex) return;
+  clearRestInterval();
+  restoreRestModalControls();
+  const secs = getRestSeconds(key);
+  restTimerState = { key, seconds: secs, remaining: secs, intervalId: null, paused: !autoStart };
+  document.getElementById('rest-ex-name').textContent = '⏱ Istirahat — ' + ex.name;
+  document.getElementById('rest-set-label').textContent = autoStart ? 'Set selesai — waktunya recovery' : 'Atur durasi istirahat khusus gerakan ini';
+  document.getElementById('rest-manual-input').value = secs;
+  document.getElementById('rest-enabled-toggle').checked = !!(state.restTimer && state.restTimer.enabled);
+  updateRestDisplay();
+  document.getElementById('rest-pause-btn').textContent = autoStart ? 'Jeda' : 'Mulai';
+  openModal('modal-rest');
+  if (autoStart) startRestInterval();
+}
+
+// Dibuka dari tombol "Timer" di session-bar — pengaturan umum, tidak terikat 1 gerakan
+function openRestSettings() {
+  clearRestInterval();
+  restoreRestModalControls();
+  const secs = (state.restTimer && state.restTimer.defaultSeconds) || 90;
+  restTimerState = { key: null, seconds: secs, remaining: secs, intervalId: null, paused: true };
+  document.getElementById('rest-ex-name').textContent = '⚙️ Pengaturan Timer Istirahat';
+  document.getElementById('rest-set-label').textContent = 'Atur durasi default untuk semua sesi & nyalakan/matikan pop-up';
+  document.getElementById('rest-manual-input').value = secs;
+  document.getElementById('rest-enabled-toggle').checked = !!(state.restTimer && state.restTimer.enabled);
+  document.getElementById('rest-pause-btn').style.display = 'none';
+  document.getElementById('rest-minus-btn').style.display = 'none';
+  document.getElementById('rest-plus-btn').style.display = 'none';
+  document.getElementById('rest-scope-exercise-btn').style.display = 'none';
+  document.getElementById('rest-skip-btn').textContent = 'Tutup';
+  updateRestDisplay();
+  openModal('modal-rest');
+}
+
+function startRestInterval() {
+  restTimerState.paused = false;
+  document.getElementById('rest-pause-btn').textContent = 'Jeda';
+  restTimerState.intervalId = setInterval(() => {
+    if (restTimerState.remaining <= 0) {
+      clearRestInterval();
+      restTimerFinished();
+      return;
+    }
+    restTimerState.remaining--;
+    updateRestDisplay();
+  }, 1000);
+}
+
+function clearRestInterval() {
+  if (restTimerState.intervalId) clearInterval(restTimerState.intervalId);
+  restTimerState.intervalId = null;
+}
+
+function pauseResumeRestTimer() {
+  if (restTimerState.paused) {
+    startRestInterval();
+  } else {
+    clearRestInterval();
+    restTimerState.paused = true;
+    document.getElementById('rest-pause-btn').textContent = 'Lanjut';
+  }
+}
+
+function updateRestDisplay() {
+  const remaining = Math.max(0, restTimerState.remaining);
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  const countdownEl = document.getElementById('rest-countdown');
+  if (countdownEl) countdownEl.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  const pct = restTimerState.seconds > 0 ? Math.max(0, Math.min(100, (remaining / restTimerState.seconds) * 100)) : 0;
+  const barEl = document.getElementById('rest-progress-bar');
+  if (barEl) barEl.style.width = pct + '%';
+}
+
+function adjustRestTimer(delta) {
+  restTimerState.remaining = Math.max(0, restTimerState.remaining + delta);
+  if (restTimerState.remaining > restTimerState.seconds) restTimerState.seconds = restTimerState.remaining;
+  updateRestDisplay();
+}
+
+function skipRestTimer() {
+  clearRestInterval();
+  closeModal('modal-rest');
+}
+
+function restTimerFinished() {
+  restTimerState.remaining = 0;
+  updateRestDisplay();
+  playRestBeep();
+  if (navigator.vibrate) { try { navigator.vibrate([200, 100, 200]); } catch(e) {} }
+  showToast('💪 Istirahat selesai, lanjut set berikutnya!');
+  const pauseBtn = document.getElementById('rest-pause-btn');
+  if (pauseBtn) pauseBtn.textContent = 'Selesai';
+}
+
+function playRestBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.28, 0.56].forEach(t => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.001, ctx.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.22, ctx.currentTime + t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.24);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + t);
+      osc.stop(ctx.currentTime + t + 0.26);
+    });
+  } catch(e) {}
+}
+
+// scope: 'exercise' → hanya untuk gerakan yang sedang dibuka di popup ini (tersimpan di gerakan itu, berlaku terus tiap muncul lagi)
+// scope: 'global'   → jadi durasi default untuk SEMUA gerakan & sesi (kecuali gerakan yang sudah punya durasi khusus sendiri)
+function saveRestDuration(scope) {
+  const val = parseInt(document.getElementById('rest-manual-input').value, 10);
+  if (isNaN(val) || val < 0) { showToast('⚠️ Masukkan durasi valid (detik)'); return; }
+  if (scope === 'global') {
+    state.restTimer.defaultSeconds = val;
+    showToast('✅ Durasi default untuk semua sesi diset ke ' + val + ' detik');
+    // Update badge gerakan yang masih pakai durasi default (belum punya durasi khusus sendiri)
+    sessionOrder.forEach(k => {
+      const exx = resolveExercise(k);
+      if (exx && !exx.restTime) {
+        const b = document.getElementById('restbadge-' + k);
+        if (b) b.innerHTML = `<i class="ti ti-clock" style="font-size:12px"></i>${val}s`;
+      }
+    });
+  } else if (scope === 'exercise' && restTimerState.key) {
+    const ex = resolveExercise(restTimerState.key);
+    if (ex) {
+      ex.restTime = val;
+      showToast('✅ Durasi khusus "' + ex.name + '" diset ke ' + val + ' detik');
+      // Update badge di kartu tanpa render ulang seluruh sesi (biar rep/berat yg sedang diisi tidak hilang)
+      const badgeEl = document.getElementById('restbadge-' + restTimerState.key);
+      if (badgeEl) badgeEl.innerHTML = `<i class="ti ti-clock" style="font-size:12px"></i>${val}s`;
+    }
+  }
+  save();
+  restTimerState.seconds = val;
+  restTimerState.remaining = val;
+  updateRestDisplay();
+}
+
+function toggleRestFeature(enabled) {
+  if (!state.restTimer) state.restTimer = { enabled: true, defaultSeconds: 90 };
+  state.restTimer.enabled = enabled;
+  save();
+  showToast(enabled ? '✅ Pop-up istirahat otomatis diaktifkan' : '🔕 Pop-up istirahat otomatis dimatikan');
+}
+function updateReco(key) {
+  const ex = resolveExercise(key);
+  if (!ex) return;
+  const prog = getProg(ex.id, ex.weight, ex.targetRep);
+  const reps = [];
+  let maxWt = 0, maxWtReps = 0;
+  for (let s = 0; s < ex.sets; s++) {
+    const v = document.getElementById(`rep-${key}-${s}`).value;
+    const wtVal = parseFloat(document.getElementById(`wt-${key}-${s}`).value);
+    if (v !== '' && !isNaN(parseInt(v))) {
+      reps.push(parseInt(v));
+      if (!isNaN(wtVal) && wtVal >= maxWt) { maxWt = wtVal; maxWtReps = parseInt(v); }
+    }
+  }
+  const reco = calcReco(reps, prog.targetRep, ex.sets, ex);
+  const el = document.getElementById('reco-' + key);
+  el.innerHTML = reco ? `<div class="reco-box ${reco.cls}">${reco.text}</div>` : '';
+
+  const zoneEl = document.getElementById('zone-' + key);
+  if (zoneEl) {
+    if (maxWt > 0 && maxWtReps > 0) {
+      const bestPrior = bestEst1RM(ex.name);
+      const estThis = epley1RM(maxWt, maxWtReps);
+      const baseline = bestPrior > 0 ? bestPrior : estThis;
+      const pct = (maxWt / baseline) * 100;
+      zoneEl.innerHTML = zoneBadgeHtml(pct, ex.id, ex.name);
+    } else {
+      zoneEl.innerHTML = '';
+    }
+  }
+}
+
+function calcReco(reps, currentTarget, totalSets, ex) {
+  if (reps.length === 0) return null;
+  if (reps.length < totalSets) return { type:'hold', cls:'reco-hold', text:'🔒 Selesaikan semua set untuk mengevaluasi progresi.' };
+  const minRep = Math.min(...reps);
+  const targetInt = parseInt(currentTarget);
+  const maxRepInt = parseInt(ex.maxRep);
+  if (minRep >= maxRepInt) return { type:'up', cls:'reco-up', text:'🔥 Sesi berikutnya Wajib Naik Beban.' };
+  if (minRep >= targetInt) {
+    const unit = ex.id.includes('plank') ? ' Detik' : ' Rep';
+    const inc = ex.repIncrement || 1;
+    return { type:'rep', cls:'reco-rep', text:`📈 Sesi berikutnya Naik ${inc}${unit}.` };
+  }
+  return { type:'hold', cls:'reco-hold', text:'🔒 Target belum merata. Pertahankan form.' };
+}
+
+// ======================================================
+// ZONA %1RM & PENGINGAT BELT
+// ======================================================
+function epley1RM(weight, reps) {
+  if (!weight || !reps) return 0;
+  return weight * (1 + reps / 30);
+}
+function zoneOf(pct) {
+  if (pct < 60) return { key:'warmup', label:'Pemanasan', color:'#888e98' };
+  if (pct < 70) return { key:'endurance', label:'Daya Tahan', color:'#3b82f6' };
+  if (pct < 80) return { key:'hypertrophy', label:'Hipertrofi', color:'var(--color-tosca-primary)' };
+  if (pct < 90) return { key:'strength', label:'Kekuatan', color:'#ffb35c' };
+  return { key:'max', label:'Maksimal', color:'var(--color-danger)' };
+}
+// Dicocokkan berdasarkan NAMA gerakan (bukan ID) — supaya rekor 1RM gerakan yang sama,
+// walau diletakkan di hari berbeda atau hasil Duplikat Hari, tetap terhitung satu kesatuan.
+function bestEst1RM(exName) {
+  let best = 0;
+  state.sessions.forEach(sess => {
+    sess.exercises.forEach(ex => {
+      if (ex.name === exName) {
+        (ex.sets || []).forEach(s => {
+          const est = epley1RM(s.wt, s.rep);
+          if (est > best) best = est;
+        });
+      }
+    });
+  });
+  return best;
+}
+const AXIAL_KEYWORDS = ['squat', 'deadlift', 'rdl', 'overhead', 'ohp', 'lunge', 'good_morning', 'goodmorning', 'front_squat', 'hack_squat'];
+function isAxialLoaded(exId, exName) {
+  const key = (exId + ' ' + (exName || '')).toLowerCase();
+  return AXIAL_KEYWORDS.some(k => key.includes(k));
+}
+function zoneBadgeHtml(pct, exId, exName) {
+  const z = zoneOf(pct);
+  const beltNote = (pct >= 80 && isAxialLoaded(exId, exName)) ? ' · pakai belt' : '';
+  return `<span class="badge" style="background:${z.color}22;color:${z.color}">${z.label} ${Math.round(pct)}%${beltNote}</span>`;
+}
+
+function finishSession() {
+  const btn = document.getElementById('btn-save-session');
+  btn.disabled = true;
+  try {
+    const dateVal = document.getElementById('session-date').value || today();
+    const sessionNoteVal = document.getElementById('session-note').value.trim();
+    const day = state.days.find(d => d.id === activeDayId);
+    if (!day) { alert('Sesi tidak valid — hari latihan tidak ditemukan. Coba mulai ulang sesi dari Home.'); return; }
+
+    let adaData = false;
+    const exercisesSaved = [];
+    const allSessionExercises = getSessionExerciseList();
+
+    allSessionExercises.forEach(({ex, key}) => {
+      const sets = [], reps = [];
+      for (let s = 0; s < ex.sets; s++) {
+        const repEl = document.getElementById(`rep-${key}-${s}`);
+        const wtEl = document.getElementById(`wt-${key}-${s}`);
+        if (!repEl || !wtEl) continue; // skip set yang elemennya belum/tidak ke-render
+        const repVal = repEl.value;
+        const wtVal = parseFloat(wtEl.value);
+        const prog = getProg(ex.id, ex.weight, ex.targetRep);
+        const wt = isNaN(wtVal) ? prog.weight : wtVal;
+        if (repVal !== '' && !isNaN(parseInt(repVal))) { sets.push({rep:parseInt(repVal),wt}); reps.push(parseInt(repVal)); adaData = true; }
+      }
+      const noteEl = document.getElementById(`note-${key}`);
+      const note = noteEl ? noteEl.value : '';
+      const prog = getProg(ex.id, ex.weight, ex.targetRep);
+      const reco = calcReco(reps, prog.targetRep, ex.sets, ex);
+      if (reco && sets.length === ex.sets) {
+        const minRep = Math.min(...reps);
+        const curWt = sets[0].wt;
+        if (reco.type === 'up') {
+          state.currentProg[ex.id] = { weight: curWt + (ex.weightJump||2.5), targetRep: ex.targetRep, lastReco:'up' };
+        } else if (reco.type === 'rep') {
+          state.currentProg[ex.id] = { weight: curWt, targetRep: Math.min(minRep + (ex.repIncrement||1), ex.maxRep), lastReco:'rep' };
+        } else {
+          state.currentProg[ex.id] = { weight: curWt, targetRep: prog.targetRep, lastReco: reco.type };
+        }
+      }
+      if (sets.length > 0) exercisesSaved.push({ name:ex.name, id:ex.id, muscle:ex.muscle, sets, note, reco: reco?reco.type:null, extra: key.startsWith('extra-') || undefined });
+    });
+
+    if (!adaData) { alert("Isi minimal satu set latihan sebelum menyimpan!"); return; }
+    state.sessions.push({ date:dateVal, dayId:activeDayId, dayName:day.name, dayType:day.type, exercises:exercisesSaved, sessionNote: sessionNoteVal });
+    sessionExtras = [];
+    sessionOrder = [];
+    clearDraft();
+    save(); goPage('home');
+  } catch (err) {
+    console.error('finishSession error:', err);
+    alert('Gagal menyimpan sesi: ' + err.message + '\nData belum tersimpan — coba lagi. Kalau berulang, screenshot pesan ini.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ======================================================
+// HISTORY
+// ======================================================
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if (state.sessions.length === 0) { el.innerHTML = '<div class="empty">Belum ada riwayat latihan.</div>'; return; }
+  const sorted = [...state.sessions].sort((a,b) => b.date.localeCompare(a.date));
+  el.innerHTML = sorted.map((sess, idx) => {
+    const exHtml = sess.exercises.map(ex => {
+      const suffix = ex.id.includes('plank') ? 's' : 'r';
+      const best = bestEst1RM(ex.name);
+      const maxSet = ex.sets.reduce((a,b)=> b.wt > a.wt ? b : a, ex.sets[0]);
+      const pct = best > 0 ? (maxSet.wt / best) * 100 : 0;
+      return `<div class="hist-ex-block">
+        <div class="hist-ex-name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">🏋️ ${ex.name} ${best>0?zoneBadgeHtml(pct, ex.id, ex.name):''}</div>
+        <div class="hist-ex-sets">${ex.sets.map((s,i)=>`S${i+1}: ${s.rep}${suffix} (${s.wt}kg)`).join(' | ')}</div>
+        ${ex.note ? `<div class="hist-ex-note">Note: ${ex.note}</div>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="hist-card">
+      <div class="hist-header">
+        <span style="font-weight:600;font-size:14px;color:var(--color-tosca-primary)">${formatDate(sess.date)}</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--color-text-secondary);font-weight:600">${sess.dayType}</span>
+          <button class="btn-download-log" onclick="downloadSession(${idx})" title="Download riwayat sesi ini"><i class="ti ti-download"></i></button>
+          <button class="btn-delete-log" onclick="deleteSession(${idx})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      <div>${exHtml}</div>
+      ${sess.sessionNote ? `<div class="tech-note" style="margin-top:10px">📝 <b>Kesimpulan:</b> ${sess.sessionNote}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function downloadSession(indexInSorted) {
+  const sorted = [...state.sessions].sort((a,b) => b.date.localeCompare(a.date));
+  const sess = sorted[indexInSorted];
+  if (!sess) return;
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sess, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute("href", dataStr);
+  const safeName = (sess.dayName || sess.dayType || 'sesi').replace(/[^a-z0-9]+/gi, '_');
+  a.setAttribute("download", `power_gym_sesi_${sess.date}_${safeName}.json`);
+  document.body.appendChild(a); a.click(); a.remove();
+  showToast('✅ Riwayat sesi diunduh!');
+}
+
+function deleteSession(indexInSorted) {
+  const sorted = [...state.sessions].sort((a,b) => b.date.localeCompare(a.date));
+  const target = sorted[indexInSorted];
+  if (!target) return;
+  if (confirm(`Hapus log sesi ${formatDate(target.date)}?`)) {
+    const origIdx = state.sessions.findIndex(s => s.date === target.date && s.dayId === target.dayId);
+    if (origIdx !== -1) { state.sessions.splice(origIdx, 1); save(); renderHistory(); }
+  }
+}
+
+// Hapus semua riwayat sesi sebelum 1 November 2026, sisakan dari November dan seterusnya.
+const CLEAN_HISTORY_CUTOFF = '2026-11-01';
+function cleanOldHistory() {
+  const toRemove = state.sessions.filter(s => s.date < CLEAN_HISTORY_CUTOFF).length;
+  if (toRemove === 0) { showToast('Tidak ada riwayat sebelum November 2026.'); return; }
+  if (!confirm(`Hapus ${toRemove} riwayat sesi sebelum 1 November 2026? Riwayat dari November dan seterusnya tetap aman. Tindakan ini permanen dan tidak bisa dibatalkan.`)) return;
+  state.sessions = state.sessions.filter(s => s.date >= CLEAN_HISTORY_CUTOFF);
+  save();
+  renderHistory();
+  showToast(`🧹 ${toRemove} riwayat sebelum November 2026 berhasil dihapus!`);
+}
+
+// ======================================================
+// PR / TARGET
+// ======================================================
+function renderPR() {
+  const el = document.getElementById('pr-list');
+  const entries = Object.entries(state.currentProg);
+  if (entries.length === 0) { el.innerHTML = '<div class="empty">Selesaikan latihan untuk kalkulasi target otomatis.</div>'; return; }
+  const allEx = [].concat(...state.days.map(d => d.exercises), sessionExtras);
+  // Fallback nama terakhir yang pernah tercatat di sesi — biar gerakan yang sudah
+  // diubah/dihapus dari program tetap tampil dengan nama aslinya, bukan raw ID
+  // (sinkron dengan logika Deload Detector & Analitik).
+  const lastKnownName = {};
+  // Tanggal sesi TERAKHIR yang tercatat untuk tiap gerakan — dipakai untuk ditampilkan
+  // per baris dan untuk mengurutkan daftar supaya yang terbaru muncul paling atas.
+  const lastKnownDate = {};
+  state.sessions.forEach(s => s.exercises.forEach(e => {
+    lastKnownName[e.id] = e.name;
+    if (!lastKnownDate[e.id] || s.date > lastKnownDate[e.id]) lastKnownDate[e.id] = s.date;
+  }));
+
+  // DIGABUNG BERDASARKAN NAMA gerakan — kalau gerakan yang sama diletakkan di hari
+  // berbeda (atau hasil Duplikat Hari) punya beberapa ID terpisah di state.currentProg,
+  // cuma tampilkan SATU baris memakai progres dari ID yang PALING BARU dicatat.
+  const byName = {};
+  entries.forEach(([id, p]) => {
+    const ex = allEx.find(e => e.id === id);
+    const name = ex ? ex.name : (lastKnownName[id] || id);
+    const date = lastKnownDate[id] || '';
+    const unit = id.includes('plank') ? 's' : 'r';
+    if (!byName[name] || date > byName[name].date) byName[name] = { id, p, date, unit };
+  });
+
+  const icons = {
+    up: '<span style="color:var(--color-tosca-primary);font-size:11px;font-weight:600">NAIK BEBAN</span>',
+    rep: '<span style="color:#60a5fa;font-size:11px;font-weight:600">NAIK REPS</span>',
+    hold: '<span style="color:#ffb35c;font-size:11px;font-weight:600">STABIL</span>'
+  };
+  const sorted = Object.entries(byName).sort((a, b) => (b[1].date || '').localeCompare(a[1].date || ''));
+  el.innerHTML = sorted.map(([name, info]) => {
+    const { id, p, date, unit } = info;
+    const best = bestEst1RM(name);
+    const pct = best > 0 ? (p.weight / best) * 100 : 0;
+    return `<div class="pr-row">
+      <div>
+        <div style="font-weight:500">${name}</div>
+        ${date ? `<div class="pr-row-date">📅 Terakhir dicatat: ${formatDate(date)}</div>` : ''}
+      </div>
+      <div class="pr-row-right">
+        <span style="font-weight:700;color:#fff">${p.weight}kg × ${p.targetRep}${unit}</span>
+        ${best>0?`<span style="font-size:11px;color:var(--color-text-secondary)">1RM ~${Math.round(best)}kg</span>`:''}
+        ${best>0?zoneBadgeHtml(pct, id, name):''}
+        ${p.lastReco ? icons[p.lastReco] : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const bbEl = document.getElementById('bb-history');
+  if (state.bbLog && state.bbLog.length > 0) {
+    const recent = [...state.bbLog].reverse().slice(0, 5);
+    bbEl.innerHTML = recent.map(b => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--color-border)"><span>${formatDate(b.date)}</span><span style="font-weight:600;color:var(--color-tosca-primary)">${b.bb} kg</span></div>`).join('');
+  } else {
+    bbEl.innerHTML = '<div class="empty" style="padding:1rem;font-size:12px">Belum ada data.</div>';
+  }
+}
+
+function saveBB() {
+  const val = parseFloat(document.getElementById('bb-input').value);
+  if (!val || val < 30 || val > 150) return;
+  if (!state.bbLog) state.bbLog = [];
+  state.bbLog.push({ date:today(), bb:val });
+  save();
+  document.getElementById('bb-input').value = '';
+  renderPR();
+}
+
+// ======================================================
+// PROGRAM EDITOR
+// ======================================================
+function renderEditor() {
+  const panel = document.getElementById('editor-day-list');
+  panel.innerHTML = state.days.map((d, di) => `
+    <div class="day-list-item${editorActiveDayId === d.id ? ' active-day' : ''}" onclick="selectEditorDay('${d.id}')">
+      <div>
+        <div class="day-item-name" style="color:${d.color}">${d.name}</div>
+        <div class="day-item-type">${d.type} · ${d.exercises.length} gerakan</div>
+      </div>
+      <div class="day-item-actions" onclick="event.stopPropagation()">
+        <button class="icon-btn" onclick="moveDay(${di}, -1)" title="Naikkan urutan" ${di === 0 ? 'disabled style="opacity:.3;cursor:not-allowed"' : ''}><i class="ti ti-chevron-up"></i></button>
+        <button class="icon-btn" onclick="moveDay(${di}, 1)" title="Turunkan urutan" ${di === state.days.length - 1 ? 'disabled style="opacity:.3;cursor:not-allowed"' : ''}><i class="ti ti-chevron-down"></i></button>
+        <button class="icon-btn" onclick="duplicateDay(${di})" title="Duplikat hari & gerakannya"><i class="ti ti-copy"></i></button>
+        <button class="icon-btn" onclick="openEditDay(${di})" title="Edit hari"><i class="ti ti-pencil"></i></button>
+        <button class="icon-btn danger" onclick="deleteDay(${di})" title="Hapus hari"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+
+  if (editorActiveDayId) renderEditorExPanel();
+}
+
+function selectEditorDay(dayId) {
+  editorActiveDayId = dayId;
+  renderEditor();
+}
+
+function renderEditorExPanel() {
+  const day = state.days.find(d => d.id === editorActiveDayId);
+  if (!day) return;
+  const panel = document.getElementById('editor-ex-panel');
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:${day.color}">${day.name}</div>
+        <div style="font-size:12px;color:var(--color-text-secondary)">${day.type}</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddExercise()"><i class="ti ti-plus" style="margin-right:6px"></i>Tambah Gerakan</button>
+    </div>
+    <div class="ex-editor-list" id="ex-editor-list">
+      ${day.exercises.length === 0 ? '<div class="empty" style="padding:2rem">Belum ada gerakan. Tambah gerakan pertama!</div>' : day.exercises.map((ex, ei) => renderExCard(ex, ei, day.exercises.length)).join('')}
+    </div>`;
+}
+
+function renderExCard(ex, ei, total) {
+  return `<div class="ex-editor-card" id="excard-${ei}">
+    <div class="ex-editor-header" onclick="toggleExCard(${ei})">
+      <div>
+        <div style="font-weight:600;font-size:14px">${ex.name} ${ex.main ? '<span class="badge">Utama</span>' : '<span class="badge badge-alt">Bonus</span>'}</div>
+        <div style="font-size:11px;color:var(--color-tosca-primary);margin-top:3px">${ex.muscle}</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">${ex.sets} set · ${ex.weight}kg · ${ex.targetRep}–${ex.maxRep} rep</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center" onclick="event.stopPropagation()">
+        <button class="icon-btn" onclick="moveExercise(${ei}, -1)" title="Naikkan urutan" ${ei === 0 ? 'disabled style="opacity:.3;cursor:not-allowed"' : ''}><i class="ti ti-chevron-up"></i></button>
+        <button class="icon-btn" onclick="moveExercise(${ei}, 1)" title="Turunkan urutan" ${ei === total - 1 ? 'disabled style="opacity:.3;cursor:not-allowed"' : ''}><i class="ti ti-chevron-down"></i></button>
+        <button class="icon-btn" onclick="openEditExercise(${ei})" title="Edit"><i class="ti ti-pencil"></i></button>
+        <button class="icon-btn danger" onclick="deleteExercise(${ei})" title="Hapus"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>
+    <div class="ex-editor-body" id="exbody-${ei}">
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;border-left:2px solid var(--color-tosca-primary);padding-left:10px">${ex.note || 'Belum ada catatan teknik.'}</div>
+      <div style="margin-top:10px;font-size:11px;color:var(--color-text-secondary)">Tempo: ${ex.tempo} &nbsp;·&nbsp; Jump: +${ex.weightJump}kg &nbsp;·&nbsp; Inc: +${ex.repIncrement}r</div>
+    </div>
+  </div>`;
+}
+
+function toggleExCard(ei) {
+  const body = document.getElementById('exbody-' + ei);
+  body.classList.toggle('open');
+}
+
+// === MODAL DAY ===
+function openAddDay() {
+  editingDayIndex = null;
+  document.getElementById('modal-day-title').textContent = 'Tambah Hari Latihan';
+  document.getElementById('md-name').value = '';
+  document.getElementById('md-type').value = '';
+  selectedColor = 'var(--color-tosca-primary)';
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  document.querySelector('.color-dot').classList.add('selected');
+  openModal('modal-day');
+}
+function openEditDay(di) {
+  editingDayIndex = di;
+  const day = state.days[di];
+  document.getElementById('modal-day-title').textContent = 'Edit Hari Latihan';
+  document.getElementById('md-name').value = day.name;
+  document.getElementById('md-type').value = day.type;
+  selectedColor = day.color;
+  document.querySelectorAll('.color-dot').forEach(d => {
+    d.classList.toggle('selected', d.dataset.color === day.color);
+  });
+  openModal('modal-day');
+}
+function saveDay() {
+  const name = document.getElementById('md-name').value.trim();
+  const type = document.getElementById('md-type').value.trim();
+  if (!name || !type) { alert('Nama dan tipe wajib diisi!'); return; }
+  if (editingDayIndex !== null) {
+    state.days[editingDayIndex].name = name;
+    state.days[editingDayIndex].type = type;
+    state.days[editingDayIndex].color = selectedColor;
+  } else {
+    state.days.push({ id: genId(name), name, type, color: selectedColor, exercises: [] });
+  }
+  save(); closeModal('modal-day'); renderEditor(); showToast('✅ Hari disimpan!');
+}
+function deleteDay(di) {
+  if (!confirm(`Hapus hari "${state.days[di].name}"? Semua gerakan di hari ini akan ikut terhapus.`)) return;
+  if (editorActiveDayId === state.days[di].id) editorActiveDayId = null;
+  state.days.splice(di, 1);
+  save(); renderEditor(); renderHome(); showToast('🗑 Hari dihapus');
+}
+function duplicateDay(di) {
+  const orig = state.days[di];
+  const copyId = genId(orig.name) + '_copy';
+  const copy = {
+    id: copyId,
+    name: orig.name + ' (Copy)',
+    type: orig.type,
+    color: orig.color,
+    exercises: orig.exercises.map((ex, i) => ({
+      ...JSON.parse(JSON.stringify(ex)),
+      id: genId(ex.name) + '_' + i
+    }))
+  };
+  state.days.splice(di + 1, 0, copy);
+  save();
+  renderEditor();
+  renderHome();
+  showToast(`📋 "${orig.name}" diduplikat beserta ${copy.exercises.length} gerakannya!`);
+}
+function moveDay(di, dir) {
+  const newIndex = di + dir;
+  if (newIndex < 0 || newIndex >= state.days.length) return;
+  const [moved] = state.days.splice(di, 1);
+  state.days.splice(newIndex, 0, moved);
+  save();
+  renderEditor();
+  renderHome();
+}
+
+function selectColor(el) {
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedColor = el.dataset.color;
+}
+
+// === MODAL EXERCISE ===
+// Isi ulang dropdown preset dari state.exerciseLibrary (dipanggil tiap modal dibuka biar selalu up-to-date)
+function renderPresetOptions() {
+  const sel = document.getElementById('me-preset');
+  const list = [...state.exerciseLibrary].sort((a,b) => a.name.localeCompare(b.name));
+  sel.innerHTML = '<option value="">— Pilih gerakan atau isi manual di bawah —</option>' +
+    list.map(ex => `<option value="${ex.name.replace(/"/g,'&quot;')}">${ex.name} (${ex.muscle})</option>`).join('');
+}
+// Isi otomatis semua field berdasarkan gerakan yang dipilih dari daftar, tetap bisa diubah manual setelahnya
+function applyPresetExercise(name) {
+  if (!name) return;
+  const ex = state.exerciseLibrary.find(x => x.name === name);
+  if (!ex) return;
+  document.getElementById('me-name').value = ex.name;
+  document.getElementById('me-muscle').value = ex.muscle;
+  document.getElementById('me-sets').value = ex.sets;
+  document.getElementById('me-weight').value = ex.weight;
+  document.getElementById('me-targetrep').value = ex.targetRep;
+  document.getElementById('me-maxrep').value = ex.maxRep;
+  document.getElementById('me-wjump').value = ex.weightJump;
+  document.getElementById('me-repinc').value = ex.repIncrement;
+  document.getElementById('me-tempo').value = ex.tempo;
+  document.getElementById('me-main').value = String(ex.main);
+  document.getElementById('me-note').value = ex.note || '';
+  // Gerakan sudah ada di daftar, jadi tidak perlu disimpan ulang secara default
+  const savelib = document.getElementById('me-savelib');
+  if (savelib) savelib.checked = false;
+}
+function openAddExercise() {
+  editingExIndex = null;
+  exModalMode = 'editor';
+  document.getElementById('modal-ex-title').textContent = 'Tambah Gerakan';
+  renderPresetOptions();
+  document.getElementById('me-preset').value = '';
+  document.getElementById('me-name').value = '';
+  document.getElementById('me-muscle').value = '';
+  document.getElementById('me-sets').value = '3';
+  document.getElementById('me-weight').value = '20';
+  document.getElementById('me-targetrep').value = '10';
+  document.getElementById('me-maxrep').value = '12';
+  document.getElementById('me-wjump').value = '5';
+  document.getElementById('me-repinc').value = '1';
+  document.getElementById('me-tempo').value = '3-1-2';
+  document.getElementById('me-main').value = 'true';
+  document.getElementById('me-note').value = '';
+  document.getElementById('me-savelib').checked = true;
+  openModal('modal-ex');
+}
+function openEditExercise(ei) {
+  const day = state.days.find(d => d.id === editorActiveDayId);
+  const ex = day.exercises[ei];
+  editingExIndex = ei;
+  exModalMode = 'editor';
+  document.getElementById('modal-ex-title').textContent = 'Edit Gerakan';
+  renderPresetOptions();
+  document.getElementById('me-preset').value = state.exerciseLibrary.some(x=>x.name===ex.name) ? ex.name : '';
+  document.getElementById('me-name').value = ex.name;
+  document.getElementById('me-muscle').value = ex.muscle;
+  document.getElementById('me-sets').value = ex.sets;
+  document.getElementById('me-weight').value = ex.weight;
+  document.getElementById('me-targetrep').value = ex.targetRep;
+  document.getElementById('me-maxrep').value = ex.maxRep;
+  document.getElementById('me-wjump').value = ex.weightJump;
+  document.getElementById('me-repinc').value = ex.repIncrement;
+  document.getElementById('me-tempo').value = ex.tempo;
+  document.getElementById('me-main').value = String(ex.main);
+  document.getElementById('me-note').value = ex.note || '';
+  document.getElementById('me-savelib').checked = true;
+  openModal('modal-ex');
+}
+function openAddSessionExercise() {
+  if (!activeDayId) return;
+  editingExIndex = null;
+  exModalMode = 'session';
+  document.getElementById('modal-ex-title').textContent = 'Tambah Gerakan Cadangan';
+  renderPresetOptions();
+  document.getElementById('me-preset').value = '';
+  document.getElementById('me-name').value = '';
+  document.getElementById('me-muscle').value = '';
+  document.getElementById('me-sets').value = '3';
+  document.getElementById('me-weight').value = '20';
+  document.getElementById('me-targetrep').value = '10';
+  document.getElementById('me-maxrep').value = '12';
+  document.getElementById('me-wjump').value = '5';
+  document.getElementById('me-repinc').value = '1';
+  document.getElementById('me-tempo').value = '3-1-2';
+  document.getElementById('me-main').value = 'false';
+  document.getElementById('me-note').value = 'Gerakan cadangan, ditambahkan langsung saat sesi berlangsung.';
+  document.getElementById('me-savelib').checked = true;
+  openModal('modal-ex');
+}
+
+function saveExercise() {
+  const name = document.getElementById('me-name').value.trim();
+  const muscle = document.getElementById('me-muscle').value.trim();
+  if (!name || !muscle) { alert('Nama dan otot sasaran wajib diisi!'); return; }
+  const ex = {
+    id: (exModalMode === 'editor' && editingExIndex !== null) ? state.days.find(d=>d.id===editorActiveDayId).exercises[editingExIndex].id : genId(name),
+    name,
+    muscle,
+    sets: parseInt(document.getElementById('me-sets').value),
+    weight: parseFloat(document.getElementById('me-weight').value),
+    targetRep: parseInt(document.getElementById('me-targetrep').value),
+    maxRep: parseInt(document.getElementById('me-maxrep').value),
+    weightJump: parseFloat(document.getElementById('me-wjump').value),
+    repIncrement: parseInt(document.getElementById('me-repinc').value),
+    tempo: document.getElementById('me-tempo').value,
+    main: document.getElementById('me-main').value === 'true',
+    note: document.getElementById('me-note').value.trim()
+  };
+
+  const saveToLib = document.getElementById('me-savelib').checked;
+  if (saveToLib) upsertExerciseLibrary(ex);
+
+  if (exModalMode === 'session') {
+    const snapshot = collectSessionFields();
+    sessionExtras.push(ex);
+    sessionOrder.push('extra-' + ex.id);
+    if (saveToLib) save();
+    closeModal('modal-ex');
+    renderSessionList();
+    applyDraftFields(snapshot);
+    showToast('✅ Gerakan cadangan ditambahkan ke sesi ini!');
+    saveDraft();
+    return;
+  }
+
+  const day = state.days.find(d => d.id === editorActiveDayId);
+  if (editingExIndex !== null) {
+    day.exercises[editingExIndex] = ex;
+  } else {
+    day.exercises.push(ex);
+  }
+  save(); closeModal('modal-ex'); renderEditorExPanel(); showToast('✅ Gerakan disimpan!');
+}
+function deleteExercise(ei) {
+  const day = state.days.find(d => d.id === editorActiveDayId);
+  if (!confirm(`Hapus gerakan "${day.exercises[ei].name}"?`)) return;
+  day.exercises.splice(ei, 1);
+  save(); renderEditorExPanel(); showToast('🗑 Gerakan dihapus');
+}
+function moveExercise(ei, dir) {
+  const day = state.days.find(d => d.id === editorActiveDayId);
+  if (!day) return;
+  const newIndex = ei + dir;
+  if (newIndex < 0 || newIndex >= day.exercises.length) return;
+  const [moved] = day.exercises.splice(ei, 1);
+  day.exercises.splice(newIndex, 0, moved);
+  save();
+  renderEditorExPanel();
+  renderHome();
+}
+
+// === MODAL UTILS ===
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ======================================================
+// ANALYTICS
+// ======================================================
+let volWeeks = 1;
+let progressRangeWeeks = null; // null = tampilkan semua riwayat, angka = jumlah minggu terakhir
+let volExpandedGroups = {}; // grup otot mana saja yang sedang diperluas di kartu Volume Mingguan per Otot
+
+// Label ramah-baca untuk rentang minggu tertentu (dipakai di label volume & progres)
+function formatWeeksLabel(w) {
+  const map = { 1: '1 minggu', 2: '2 minggu', 4: '1 bulan', 13: '3 bulan', 26: '6 bulan', 52: '1 tahun' };
+  return map[w] || (w + ' minggu');
+}
+
+// Muscle group mapping — otot ke warna
+const MUSCLE_COLORS = {
+  'Quads': '#60a5fa', 'Glutes': '#a78bfa', 'Hamstrings': '#f472b6',
+  'Core': '#ffb35c', 'Dada': '#f97316', 'Tricep': '#34d399',
+  'Bahu': '#5eead4', 'Punggung': '#818cf8', 'Bicep': '#fb923c',
+  'Lats': '#38bdf8', 'Calf': '#4ade80', 'Forearm': '#e879f9',
+  'default': '#888e98'
+};
+
+function getMuscleColor(muscle) {
+  for (const [key, color] of Object.entries(MUSCLE_COLORS)) {
+    if (muscle.toLowerCase().includes(key.toLowerCase())) return color;
+  }
+  return MUSCLE_COLORS.default;
+}
+
+function setVolWeek(n, btn) {
+  volWeeks = n;
+  document.querySelectorAll('#vol-range-row .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVolumeChart();
+}
+
+function setProgressRange(weeksOrNull, btn) {
+  progressRangeWeeks = weeksOrNull;
+  document.querySelectorAll('#progress-range-row .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProgressChart();
+}
+
+function renderAnalytics() {
+  renderMeasureDisplay();
+  populateExSelect();
+  // Kalau ada gerakan yang masih terpilih (dipertahankan oleh populateExSelect), gambar ulang grafiknya
+  if (document.getElementById('ex-select-chart').value) renderProgressChart();
+  renderVolumeChart();
+  renderProgressTable();
+}
+
+// ---- BODY MEASUREMENT ----
+const MEASURE_FIELDS = ['bw','neck','shoulder','chest','waist','hip','arml','armr','thighl','thighr','calf'];
+const MEASURE_LABELS = { bw:'Berat Badan', neck:'Leher', shoulder:'Pundak', chest:'Dada', waist:'Pinggang', hip:'Pinggul', arml:'Lengan Kiri', armr:'Lengan Kanan', thighl:'Paha Kiri', thighr:'Paha Kanan', calf:'Betis' };
+const MEASURE_UNITS = { bw: 'kg' };
+const MEASURE_INVERT = ['waist']; // makin kecil makin bagus (indikator lemak, bukan otot)
+
+function openMeasureForm() {
+  MEASURE_FIELDS.forEach(k => {
+    document.getElementById('m-'+k).value = '';
+  });
+  document.getElementById('m-note').value = '';
+  openModal('modal-measure');
+}
+
+function saveMeasure() {
+  const entry = { date: today(), note: document.getElementById('m-note').value };
+  let hasData = false;
+  MEASURE_FIELDS.forEach(k => {
+    const v = parseFloat(document.getElementById('m-'+k).value);
+    if (!isNaN(v) && v > 0) { entry[k] = v; hasData = true; }
+  });
+  if (!hasData) { alert('Isi minimal satu ukuran!'); return; }
+  if (!state.measurements) state.measurements = [];
+  state.measurements.push(entry);
+  save(); closeModal('modal-measure');
+  renderMeasureDisplay();
+  showToast('✅ Ukuran tersimpan!');
+}
+
+function renderMeasureDisplay() {
+  const el = document.getElementById('measure-display');
+  const hist = document.getElementById('measure-history-mini');
+  if (!state.measurements || state.measurements.length === 0) {
+    el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:1.5rem;color:var(--color-text-secondary);font-size:13px">Belum ada data ukuran. Catat pertama kali!</div>`;
+    hist.innerHTML = '';
+    populateMeasureTrendSelect();
+    return;
+  }
+  const latest = state.measurements[state.measurements.length - 1];
+  const prev = state.measurements.length > 1 ? state.measurements[state.measurements.length - 2] : null;
+
+  el.innerHTML = MEASURE_FIELDS.map(k => {
+    const label = MEASURE_LABELS[k];
+    if (!latest[k]) return '';
+    const unit = MEASURE_UNITS[k] || 'cm';
+    const delta = prev && prev[k] ? (latest[k] - prev[k]) : null;
+    let deltaHtml = '';
+    if (delta !== null) {
+      const goodUp = !MEASURE_INVERT.includes(k);
+      const cls = delta === 0 ? 'delta-same' : ((delta > 0) === goodUp ? 'delta-up' : 'delta-down');
+      const sign = delta > 0 ? '+' : '';
+      deltaHtml = `<span class="measure-delta ${cls}">${sign}${delta.toFixed(1)}</span>`;
+    }
+    return `<div class="measure-item">
+      <div class="measure-label">${label}</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:18px;font-weight:700;color:#fff">${latest[k]}</span>
+        <span style="font-size:11px;color:var(--color-text-secondary)">${unit}</span>
+        ${deltaHtml}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Mini history (3 entri terakhir)
+  const recent = [...state.measurements].reverse().slice(0, 3);
+  hist.innerHTML = `<div style="margin-top:12px;border-top:1px solid var(--color-border);padding-top:12px;font-size:11px;color:var(--color-text-secondary)">
+    ${recent.map(m => `<span style="margin-right:16px">📅 ${formatDate(m.date)} ${m.bw ? '· '+m.bw+'kg' : ''} ${m.chest ? '· Dada '+m.chest+'cm' : ''}</span>`).join('')}
+  </div>`;
+
+  populateMeasureTrendSelect();
+}
+
+// ---- TREN PER BAGIAN TUBUH ----
+function populateMeasureTrendSelect() {
+  const sel = document.getElementById('measure-trend-select');
+  if (!sel) return;
+  const prevVal = sel.value;
+  const withData = MEASURE_FIELDS.filter(k => (state.measurements || []).filter(m => m[k] !== undefined).length >= 2);
+  sel.innerHTML = '<option value="">-- Pilih bagian tubuh --</option>' +
+    withData.map(k => `<option value="${k}">${MEASURE_LABELS[k]}</option>`).join('');
+  if (withData.includes(prevVal)) sel.value = prevVal;
+}
+
+function renderMeasureTrendChart() {
+  const key = document.getElementById('measure-trend-select').value;
+  const wrap = document.getElementById('measure-trend-wrap');
+  if (!key) { wrap.innerHTML = '<div class="empty" style="padding:2rem;font-size:13px">Pilih bagian tubuh untuk lihat trennya.</div>'; return; }
+
+  const points = (state.measurements || [])
+    .filter(m => m[key] !== undefined)
+    .map(m => ({ date: m.date, v: m[key] }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (points.length < 2) { wrap.innerHTML = '<div class="empty" style="padding:2rem;font-size:13px">Data belum cukup untuk grafik ini.</div>'; return; }
+
+  const W = 500, H = 180, padL = 45, padR = 15, padT = 15, padB = 35;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const vals = points.map(p => p.v);
+  const range = Math.max(...vals) - Math.min(...vals) || 1;
+  const minV = Math.min(...vals) - range * 0.15;
+  const maxV = Math.max(...vals) + range * 0.15;
+  const xStep = plotW / (points.length - 1);
+
+  const toX = i => padL + i * xStep;
+  const toY = v => padT + plotH - ((v - minV) / (maxV - minV)) * plotH;
+
+  const linePath = points.map((p, i) => `${i===0?'M':'L'}${toX(i).toFixed(1)},${toY(p.v).toFixed(1)}`).join(' ');
+  const areaPath = linePath + ` L${toX(points.length-1)},${(padT+plotH)} L${padL},${(padT+plotH)} Z`;
+
+  const dots = points.map((p, i) => `
+    <circle cx="${toX(i).toFixed(1)}" cy="${toY(p.v).toFixed(1)}" r="4" fill="var(--color-tosca-primary)" stroke="#0a0b0d" stroke-width="2">
+      <title>${formatDate(p.date)}: ${p.v}${MEASURE_UNITS[key] || 'cm'}</title>
+    </circle>`).join('');
+
+  const yLabels = [minV, (minV+maxV)/2, maxV].map(v => {
+    const y = toY(v);
+    return `<text x="${padL-6}" y="${y+4}" font-size="10" fill="#888e98" text-anchor="end">${v.toFixed(1)}</text>`;
+  }).join('');
+
+  const xStep2 = Math.ceil(points.length / 5);
+  const xLabels = points.filter((_, i) => i % xStep2 === 0 || i === points.length-1).map(p => {
+    const origIdx = points.indexOf(p);
+    return `<text x="${toX(origIdx)}" y="${H-5}" font-size="9" fill="#888e98" text-anchor="middle">${formatDate(p.date)}</text>`;
+  }).join('');
+
+  const diff = vals[vals.length-1] - vals[0];
+  const goodUp = !MEASURE_INVERT.includes(key);
+  const trendGood = diff !== 0 && ((diff > 0) === goodUp);
+
+  wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+    <defs>
+      <linearGradient id="measureChartGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3ee08b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#3ee08b" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#measureChartGrad)"/>
+    <path d="${linePath}" fill="none" stroke="#3ee08b" stroke-width="2" stroke-linejoin="round"/>
+    ${dots}
+    ${yLabels}
+    ${xLabels}
+    <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#24272d" stroke-width="1"/>
+    <line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="#24272d" stroke-width="1"/>
+  </svg>
+  <div style="text-align:center;font-size:11px;color:var(--color-text-secondary);margin-top:4px">
+    Hover titik untuk detail · ${points.length} data · Tren: ${diff === 0 ? '📊 Stabil' : (trendGood ? '✅ ' : '⚠️ ') + (diff>0?'+':'') + diff.toFixed(1) + (MEASURE_UNITS[key]||'cm') + ' dari awal'}
+  </div>`;
+}
+
+// ---- DOWNLOAD LAPORAN BODY MEASUREMENT ----
+function downloadMeasureCSV() {
+  if (!state.measurements || state.measurements.length === 0) { alert('Belum ada data ukuran untuk didownload!'); return; }
+  const header = ['tanggal', ...MEASURE_FIELDS, 'catatan'];
+  const rows = state.measurements.map(m => {
+    const row = [m.date, ...MEASURE_FIELDS.map(k => m[k] !== undefined ? m[k] : ''), (m.note || '').replace(/"/g, '""')];
+    return row.map(v => typeof v === 'string' && (v.includes(',') || v.includes('"')) ? `"${v}"` : v).join(',');
+  });
+  const csv = [header.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('href', url);
+  a.setAttribute('download', `body_measurement_${today()}.csv`);
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function downloadMeasureJSON() {
+  if (!state.measurements || state.measurements.length === 0) { alert('Belum ada data ukuran untuk didownload!'); return; }
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.measurements, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute('href', dataStr);
+  a.setAttribute('download', `body_measurement_${today()}.json`);
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ---- GRAFIK PROGRES BEBAN ----
+function populateExSelect() {
+  const sel = document.getElementById('ex-select-chart');
+  const prevVal = sel.value;
+  // Dikelompokkan berdasarkan NAMA gerakan (bukan ID) — supaya gerakan dengan nama sama
+  // tapi ID berbeda (misalnya hasil Duplikat Hari, atau gerakan yang diedit ulang) tetap
+  // digabung jadi satu riwayat/grafik, bukan terpisah.
+  const namesWithData = new Set();
+  state.sessions.forEach(s => s.exercises.forEach(e => namesWithData.add(e.name)));
+  const names = [...namesWithData].sort((a, b) => a.localeCompare(b));
+  sel.innerHTML = '<option value="">-- Pilih gerakan --</option>' +
+    names.map(n => `<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+  // Pertahankan pilihan sebelumnya kalau masih ada di daftar (biar nggak reset pas re-render)
+  if (prevVal && [...sel.options].some(o => o.value === prevVal)) sel.value = prevVal;
+}
+
+function renderProgressChart() {
+  const exName = document.getElementById('ex-select-chart').value;
+  const wrap = document.getElementById('progress-chart-wrap');
+  if (!exName) { wrap.innerHTML = '<div class="empty" style="padding:2rem;font-size:13px">Pilih gerakan untuk lihat grafiknya.</div>'; return; }
+
+  // Kumpulkan data dari semua sesi, DIGABUNG berdasarkan NAMA gerakan (bukan ID) — kalau ada
+  // beberapa ID berbeda dengan nama yang sama (misal hasil Duplikat Hari), semua datanya
+  // tetap masuk ke satu grafik yang sama, diurutkan murni berdasarkan tanggal.
+  const allDataPoints = [];
+  state.sessions.forEach(s => {
+    s.exercises.forEach(e => {
+      if (e.name === exName && e.sets && e.sets.length > 0) {
+        const avgWt = e.sets.reduce((a, b) => a + b.wt, 0) / e.sets.length;
+        const maxWt = Math.max(...e.sets.map(s => s.wt));
+        allDataPoints.push({ date: s.date, wt: maxWt, avgRep: (e.sets.reduce((a,b)=>a+b.rep,0)/e.sets.length).toFixed(1) });
+      }
+    });
+  });
+  allDataPoints.sort((a, b) => a.date.localeCompare(b.date));
+
+  if (allDataPoints.length === 0) { wrap.innerHTML = '<div class="empty" style="padding:2rem;font-size:13px">Belum ada data sesi untuk gerakan ini.</div>'; return; }
+
+  // Terapkan filter rentang waktu (null = semua riwayat)
+  let dataPoints = allDataPoints;
+  if (progressRangeWeeks !== null) {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - (progressRangeWeeks * 7));
+    const cutoffStr = cutoff.toISOString().slice(0,10);
+    dataPoints = allDataPoints.filter(d => d.date >= cutoffStr);
+  }
+
+  if (dataPoints.length === 0) { wrap.innerHTML = `<div class="empty" style="padding:2rem;font-size:13px">Belum ada data di periode ${formatWeeksLabel(progressRangeWeeks)} terakhir. Coba pilih rentang yang lebih panjang.</div>`; return; }
+  if (dataPoints.length === 1) { wrap.innerHTML = `<div style="text-align:center;padding:2rem;font-size:13px;color:var(--color-text-secondary)">Baru 1 sesi tercatat di periode ini (${dataPoints[0].wt}kg). Lanjutkan latihan atau pilih rentang lebih panjang untuk lihat tren!</div>`; return; }
+
+  // SVG chart
+  const W = 500, H = 180, padL = 45, padR = 15, padT = 15, padB = 35;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const wts = dataPoints.map(d => d.wt);
+  const minW = Math.min(...wts) * 0.95, maxW = Math.max(...wts) * 1.05;
+  const xStep = plotW / (dataPoints.length - 1);
+
+  const toX = i => padL + i * xStep;
+  const toY = v => padT + plotH - ((v - minW) / (maxW - minW)) * plotH;
+
+  const linePath = dataPoints.map((d, i) => `${i===0?'M':'L'}${toX(i).toFixed(1)},${toY(d.wt).toFixed(1)}`).join(' ');
+  const areaPath = linePath + ` L${toX(dataPoints.length-1)},${(padT+plotH)} L${padL},${(padT+plotH)} Z`;
+
+  const dots = dataPoints.map((d, i) => `
+    <circle cx="${toX(i).toFixed(1)}" cy="${toY(d.wt).toFixed(1)}" r="4" fill="var(--color-tosca-primary)" stroke="#0a0b0d" stroke-width="2">
+      <title>${formatDate(d.date)}: ${d.wt}kg × ${d.avgRep}r avg</title>
+    </circle>`).join('');
+
+  // Y labels
+  const yLabels = [minW, (minW+maxW)/2, maxW].map(v => {
+    const y = toY(v);
+    return `<text x="${padL-6}" y="${y+4}" font-size="10" fill="#888e98" text-anchor="end">${Math.round(v)}</text>`;
+  }).join('');
+
+  // X labels (max 5)
+  const xStep2 = Math.ceil(dataPoints.length / 5);
+  const xLabels = dataPoints.filter((_, i) => i % xStep2 === 0 || i === dataPoints.length-1).map((d, _, arr) => {
+    const origIdx = dataPoints.indexOf(d);
+    return `<text x="${toX(origIdx)}" y="${H-5}" font-size="9" fill="#888e98" text-anchor="middle">${formatDate(d.date)}</text>`;
+  }).join('');
+
+  // Hitung kecepatan progres: total kenaikan dibagi rentang waktu aktual data (bukan cuma jumlah minggu filter)
+  const first = dataPoints[0], last = dataPoints[dataPoints.length-1];
+  const deltaWt = last.wt - first.wt;
+  const daysSpan = Math.max(1, Math.round((new Date(last.date) - new Date(first.date)) / (1000*60*60*24)));
+  const weeksSpan = daysSpan / 7;
+  const ratePerWeek = deltaWt / weeksSpan;
+  let trendText;
+  if (Math.abs(deltaWt) < 0.05) {
+    trendText = '📊 Stabil, belum ada kenaikan/penurunan beban di periode ini';
+  } else if (deltaWt > 0) {
+    trendText = `📈 +${deltaWt.toFixed(1)}kg dalam ${daysSpan} hari · rata-rata ≈${ratePerWeek.toFixed(2)}kg/minggu`;
+  } else {
+    trendText = `📉 ${deltaWt.toFixed(1)}kg dalam ${daysSpan} hari · rata-rata ≈${ratePerWeek.toFixed(2)}kg/minggu`;
+  }
+
+  wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+    <defs>
+      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3ee08b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#3ee08b" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#chartGrad)"/>
+    <path d="${linePath}" fill="none" stroke="#3ee08b" stroke-width="2" stroke-linejoin="round"/>
+    ${dots}
+    ${yLabels}
+    ${xLabels}
+    <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#24272d" stroke-width="1"/>
+    <line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="#24272d" stroke-width="1"/>
+  </svg>
+  <div style="text-align:center;font-size:11px;color:var(--color-text-secondary);margin-top:4px">
+    Hover titik untuk detail · ${dataPoints.length} sesi tercatat · Tren: ${trendText}
+  </div>`;
+}
+
+// ---- WEEKLY VOLUME ----
+function renderVolumeChart() {
+  const el = document.getElementById('volume-chart');
+  let filteredSessions = state.sessions;
+  if (volWeeks !== null) {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - (volWeeks * 7));
+    const cutoffStr = cutoff.toISOString().slice(0,10);
+    filteredSessions = state.sessions.filter(s => s.date >= cutoffStr);
+  }
+
+  // Hitung set per muscle group
+  const muscleVol = {};
+  filteredSessions.forEach(sess => {
+    sess.exercises.forEach(ex => {
+      const allEx = [].concat(...state.days.map(d => d.exercises), sessionExtras);
+      const exDef = allEx.find(e => e.id === ex.id);
+      // Fallback bertingkat: pakai muscle yang tersimpan di program aktif, lalu muscle yang tersimpan di sesi
+      // (gerakan yang sudah diubah/dihapus), baru nama gerakan kalau benar-benar tidak ada info otot sama sekali.
+      const muscles = exDef ? exDef.muscle : (ex.muscle || ex.name);
+      // Split muscle groups
+      muscles.split(',').forEach(m => {
+        const key = m.trim().split(' ')[0]; // ambil kata pertama saja
+        if (!muscleVol[key]) muscleVol[key] = 0;
+        muscleVol[key] += ex.sets ? ex.sets.length : 0;
+      });
+    });
+  });
+
+  if (Object.keys(muscleVol).length === 0) {
+    el.innerHTML = '<div class="empty" style="padding:1.5rem;font-size:13px">Belum ada sesi di periode ini.</div>';
+    return;
+  }
+
+  const periodLabel = volWeeks !== null ? formatWeeksLabel(volWeeks) : 'sepanjang waktu';
+  // Rekomendasi minimum set PER MINGGU per muscle — diskalakan sesuai panjang periode yang dipilih
+  const minSetsPerWeek = { 'Quads':8, 'Hamstrings':6, 'Glutes':6, 'Dada':6, 'Punggung':10, 'Bahu':8, 'Tricep':6, 'Bicep':6 };
+
+  // Kelompokkan muscle individual ke grup yang lebih besar biar nggak jadi daftar panjang
+  const MUSCLE_GROUPS = {
+    'Lower Body': { icon: '🦵', muscles: ['Quads','Hamstrings','Glutes','Calf'] },
+    'Dorong':     { icon: '💪', muscles: ['Dada','Bahu','Tricep'] },
+    'Tarik':      { icon: '🤝', muscles: ['Punggung','Lats','Bicep','Forearm'] },
+    'Core':       { icon: '🔥', muscles: ['Core'] },
+  };
+  const grouped = {};
+  Object.entries(muscleVol).forEach(([muscle, sets]) => {
+    let groupName = 'Lainnya';
+    for (const [gName, gData] of Object.entries(MUSCLE_GROUPS)) {
+      if (gData.muscles.includes(muscle)) { groupName = gName; break; }
+    }
+    if (!grouped[groupName]) grouped[groupName] = { total: 0, items: [] };
+    grouped[groupName].total += sets;
+    grouped[groupName].items.push([muscle, sets]);
+  });
+
+  const groupNames = Object.keys(grouped).sort((a,b) => grouped[b].total - grouped[a].total);
+  const maxGroupVol = Math.max(...groupNames.map(g => grouped[g].total));
+
+  el.innerHTML = groupNames.map(gName => {
+    const g = grouped[gName];
+    const icon = MUSCLE_GROUPS[gName] ? MUSCLE_GROUPS[gName].icon : '📦';
+    const pct = (g.total / maxGroupVol) * 100;
+    const isOpen = !!volExpandedGroups[gName];
+    const subRows = [...g.items].sort((a,b) => b[1]-a[1]).map(([muscle, sets]) => {
+      const color = getMuscleColor(muscle);
+      const subMax = Math.max(...g.items.map(i => i[1]));
+      const subPct = (sets / subMax) * 100;
+      const minPerWeek = minSetsPerWeek[muscle];
+      const scaledMin = (volWeeks !== null && minPerWeek) ? minPerWeek * volWeeks : null;
+      const isLow = scaledMin && sets < scaledMin;
+      return `<div class="vol-muscle-row vol-sub-row" title="${muscle}: ${sets} set dalam ${periodLabel}">
+        <div class="vol-muscle-name" style="color:${color}">${muscle}</div>
+        <div class="vol-bar-track">
+          <div class="vol-bar-fill" style="width:${subPct}%;background:${color}${isLow?';opacity:0.5':''}"></div>
+        </div>
+        <div class="vol-set-count" style="color:${color}">${sets}</div>
+        ${isLow ? '<span title="Volume rendah" style="font-size:11px">⚠️</span>' : ''}
+      </div>`;
+    }).join('');
+    return `<div class="vol-group${isOpen?' open':''}">
+      <div class="vol-group-header" onclick="toggleVolGroup('${gName}')">
+        <span class="vol-group-icon">${icon}</span>
+        <span class="vol-group-name">${gName}</span>
+        <div class="vol-bar-track" style="flex:1;margin:0 4px">
+          <div class="vol-bar-fill" style="width:${pct}%;background:var(--color-tosca-primary)"></div>
+        </div>
+        <span class="vol-group-sub">${g.items.length} otot</span>
+        <span class="vol-group-total">${g.total}</span>
+        <i class="ti ti-chevron-down vol-group-chevron"></i>
+      </div>
+      <div class="vol-group-body">${subRows}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleVolGroup(name) {
+  volExpandedGroups[name] = !volExpandedGroups[name];
+  renderVolumeChart();
+}
+
+// ---- PROGRESS TABLE ----
+function renderProgressTable() {
+  const el = document.getElementById('progress-table');
+  // DIKELOMPOKKAN BERDASARKAN NAMA gerakan (bukan ID) — gerakan dengan nama sama yang
+  // diletakkan di hari berbeda, atau hasil Duplikat Hari, tetap digabung jadi satu baris.
+  const exWithData = {};
+
+  state.sessions.forEach(s => {
+    s.exercises.forEach(e => {
+      if (!exWithData[e.name]) exWithData[e.name] = { first: null, last: null, count: 0 };
+      const d = exWithData[e.name];
+      const maxWt = e.sets && e.sets.length > 0 ? Math.max(...e.sets.map(s=>s.wt)) : 0;
+      if (!d.first) d.first = { date: s.date, wt: maxWt };
+      d.last = { date: s.date, wt: maxWt };
+      d.count++;
+    });
+  });
+
+  if (Object.keys(exWithData).length === 0) {
+    el.innerHTML = '<div class="empty" style="padding:2rem">Selesaikan sesi latihan untuk lihat rekapitulasi.</div>';
+    return;
+  }
+
+  el.innerHTML = `<table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr style="border-bottom:1px solid var(--color-border);font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em">
+        <th style="text-align:left;padding:8px 0">Gerakan</th>
+        <th style="text-align:center;padding:8px">Beban Awal</th>
+        <th style="text-align:center;padding:8px">Beban Skrg</th>
+        <th style="text-align:center;padding:8px">+Δ</th>
+        <th style="text-align:center;padding:8px">Sesi</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${Object.entries(exWithData).map(([name, d]) => {
+        const delta = d.last.wt - d.first.wt;
+        const deltaStr = delta > 0 ? `<span style="color:var(--color-tosca-primary);font-weight:700">+${delta}kg</span>` :
+                         delta < 0 ? `<span style="color:var(--color-danger)">-${Math.abs(delta)}kg</span>` :
+                         `<span style="color:var(--color-text-secondary)">—</span>`;
+        return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+          <td style="padding:10px 0;font-size:13px;font-weight:500">${name}</td>
+          <td style="text-align:center;font-size:13px;color:var(--color-text-secondary)">${d.first.wt}kg</td>
+          <td style="text-align:center;font-size:13px;font-weight:600">${d.last.wt}kg</td>
+          <td style="text-align:center">${deltaStr}</td>
+          <td style="text-align:center;font-size:13px;color:var(--color-text-secondary)">${d.count}x</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+}
+
+
+// ======================================================
+// DELOAD DETECTOR
+// ======================================================
+function renderMonthlyDeloadBanner() {
+  const el = document.getElementById('deload-monthly');
+  if (!el) return;
+  const now = new Date();
+  const day = now.getDate();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const weekOfMonth = Math.ceil(day / 7); // 1–5
+  const isActive = weekOfMonth >= 4;
+  const dots = [1,2,3,4].map(w => `<div class="deload-week-dot${w <= Math.min(weekOfMonth,4) ? ' filled' : ''}"></div>`).join('');
+  const monthName = now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+  el.innerHTML = `<div class="deload-monthly-banner ${isActive ? 'active' : 'inactive'}">
+    <div class="deload-monthly-icon">${isActive ? '🔁' : '📅'}</div>
+    <div style="flex:1;min-width:200px">
+      <div class="deload-monthly-title">${isActive ? 'Deload Aktif — Deload Bulanan' : `Minggu ke-${weekOfMonth} · ${monthName}`}</div>
+      <div class="deload-monthly-sub">${isActive
+        ? 'Sekarang minggu ke-4 (akhir bulan). Disarankan deload ringan minggu ini untuk seluruh program, terlepas dari status progres per gerakan di bawah.'
+        : `Deload bulanan akan aktif otomatis saat masuk minggu ke-4 (akhir bulan), sekitar tanggal ${daysInMonth - 6}–${daysInMonth}.`}</div>
+    </div>
+    <div class="deload-week-dots">${dots}</div>
+  </div>`;
+}
+
+function renderDeload() {
+  const listEl = document.getElementById('deload-list');
+  const summaryEl = document.getElementById('deload-summary');
+
+  renderMonthlyDeloadBanner();
+
+  if (state.sessions.length < 3) {
+    listEl.innerHTML = '<div class="empty" style="padding:3rem">Butuh minimal 3 sesi latihan untuk analisis deload.</div>';
+    summaryEl.innerHTML = '';
+    return;
+  }
+
+  // Kumpulkan history beban per exercise, DIKELOMPOKKAN BERDASARKAN NAMA (bukan ID) —
+  // supaya gerakan dengan nama sama yang diletakkan di hari berbeda (atau hasil Duplikat
+  // Hari) tetap dianggap satu gerakan yang sama, sorted by date.
+  const exHistory = {};
+  [...state.sessions].sort((a,b) => a.date.localeCompare(b.date)).forEach(sess => {
+    sess.exercises.forEach(ex => {
+      if (!exHistory[ex.name]) exHistory[ex.name] = [];
+      const maxWt = ex.sets && ex.sets.length > 0 ? Math.max(...ex.sets.map(s => s.wt)) : 0;
+      const avgRep = ex.sets && ex.sets.length > 0 ? ex.sets.reduce((a,b)=>a+b.rep,0)/ex.sets.length : 0;
+      // reco 'up' (naik beban) atau 'rep' (naik rep) = progres tervalidasi pada sesi itu, sesuai skema double progression aplikasi ini
+      exHistory[ex.name].push({ date: sess.date, wt: maxWt, avgRep: parseFloat(avgRep.toFixed(1)), name: ex.name, reco: ex.reco || null });
+    });
+  });
+
+  const results = [];
+  let pendingCount = 0;
+
+  Object.entries(exHistory).forEach(([name, history]) => {
+    // Baru dianalisis setelah gerakan ini tercatat di MINIMAL 3 sesi
+    if (history.length < 3) { pendingCount++; return; }
+
+    const last3 = history.slice(-3);
+    // Pakai hasil evaluasi progres ('up'/'rep') yang sudah dihitung aplikasi per sesi, bukan tren 1RM mentah.
+    // Ini penting untuk skema double progression: saat rep mentok max lalu beban naik & rep di-reset,
+    // angka beban/rep antar sesi jadi naik-turun padahal itu progres yang sah — reco sudah menangani ini dengan benar.
+    const progressedSessions = last3.filter(s => s.reco === 'up' || s.reco === 'rep').length;
+    const flatSessions = 3 - progressedSessions;
+
+    let status, cls, icon, advice;
+    if (progressedSessions >= 2) {
+      status = 'progres'; cls = 'deload-ok'; icon = '🟢';
+      advice = `Beban terakhir: <b style="color:#fff">${last3[2].wt}kg</b>. Progres terdeteksi di ${progressedSessions} dari 3 sesi terakhir (naik beban/rep). Lanjutkan program normal.`;
+    } else if (flatSessions === 3) {
+      status = 'stagnasi'; cls = 'deload-stale'; icon = '🔴';
+      const deloadWt = (last3[2].wt * 0.6).toFixed(1);
+      advice = `Tidak ada progres beban maupun rep di <b style="color:#ff5c5c">3 sesi terakhir</b> (terakhir: ${last3[2].wt}kg). <b style="color:#fff">Rekomen: Deload 1 minggu → turun ke ~${deloadWt}kg, fokus form dan tempo. Setelah itu reset progres.</b>`;
+    } else {
+      status = 'perhatian'; cls = 'deload-warn'; icon = '🟡';
+      advice = `Hanya ${progressedSessions} dari 3 sesi terakhir yang menunjukkan progres. Coba: variasi tempo, ganti rep range, atau cek nutrisi & tidur sebelum pertimbangkan deload.`;
+    }
+
+    const badgeCls = status === 'progres' ? 'badge-ok' : status === 'perhatian' ? 'badge-warn' : 'badge-stale';
+    const badgeLabel = status === 'progres' ? 'ON TRACK' : status === 'perhatian' ? 'PERHATIAN' : 'DELOAD';
+
+    results.push({ status, cls, icon, name, advice, badgeCls, badgeLabel, history: last3 });
+  });
+
+  // Sort: stagnasi dulu, perhatian, progres
+  const order = { stagnasi:0, perhatian:1, progres:2 };
+  results.sort((a,b) => order[a.status] - order[b.status]);
+
+  // Summary banner
+  const stagnasi = results.filter(r => r.status === 'stagnasi').length;
+  const perhatian = results.filter(r => r.status === 'perhatian').length;
+  const progres = results.filter(r => r.status === 'progres').length;
+
+  summaryEl.innerHTML = `<div class="deload-stat-grid" style="grid-template-columns:repeat(${pendingCount > 0 ? 4 : 3},1fr)">
+    <div class="deload-stat" style="background:rgba(0,245,212,0.08);border:1px solid rgba(0,245,212,0.2)">
+      <div class="deload-stat-icon" style="background:rgba(0,245,212,0.15)">🟢</div>
+      <div><div class="deload-stat-val" style="color:var(--color-tosca-primary)">${progres}</div><div class="deload-stat-lbl">Gerakan Progres</div></div>
+    </div>
+    <div class="deload-stat" style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2)">
+      <div class="deload-stat-icon" style="background:rgba(251,191,36,0.15)">🟡</div>
+      <div><div class="deload-stat-val" style="color:#ffb35c">${perhatian}</div><div class="deload-stat-lbl">Perlu Perhatian</div></div>
+    </div>
+    <div class="deload-stat" style="background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2)">
+      <div class="deload-stat-icon" style="background:rgba(255,77,77,0.15)">🔴</div>
+      <div><div class="deload-stat-val" style="color:#ff5c5c">${stagnasi}</div><div class="deload-stat-lbl">Rekomen Deload</div></div>
+    </div>
+    ${pendingCount > 0 ? `<div class="deload-stat" style="background:rgba(255,255,255,0.04);border:1px solid var(--color-border)">
+      <div class="deload-stat-icon" style="background:rgba(255,255,255,0.06)">⏳</div>
+      <div><div class="deload-stat-val" style="color:var(--color-text-secondary)">${pendingCount}</div><div class="deload-stat-lbl">Menunggu Data (&lt;3 sesi)</div></div>
+    </div>` : ''}
+  </div>`;
+
+  const sectionLabels = { stagnasi: '🔴 Rekomendasi Deload', perhatian: '🟡 Perlu Perhatian', progres: '🟢 Progres Baik' };
+  let lastStatus = null;
+  listEl.innerHTML = results.map(r => {
+    const sectionHdr = r.status !== lastStatus ? `<div class="deload-section-lbl">${sectionLabels[r.status]}</div>` : '';
+    lastStatus = r.status;
+    return `${sectionHdr}
+    <div class="deload-card ${r.cls}">
+      <div class="deload-icon-circle">${r.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="deload-name">${r.name}<span class="deload-badge ${r.badgeCls}">${r.badgeLabel}</span></div>
+        <div class="deload-detail">${r.advice}</div>
+        <div style="margin-top:9px;display:flex;gap:6px;flex-wrap:wrap">
+          ${r.history.map(h => `<span class="deload-tag">${formatDate(h.date)}: ${h.wt}kg ${h.reco === 'up' ? '⬆️beban' : h.reco === 'rep' ? '📈rep' : '➖'}</span>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  if (results.length === 0) listEl.innerHTML = `<div class="empty" style="padding:3rem">Belum ada gerakan dengan 3 sesi tercatat.${pendingCount > 0 ? ' Terus lanjutkan sesi latihan agar analisis deload bisa mulai berjalan per gerakan.' : ''}</div>`;
+}
+
+// ======================================================
+// INIT
+// ======================================================
+window.addEventListener('DOMContentLoaded', () => {
+  syncFromCloud();
+  setTimeout(() => {
+    const splash = document.getElementById('splash');
+    if (splash) splash.classList.add('fade-out');
+    tryRestoreDraft();
+  }, 1500);
+});
+
+renderHome();
+</script>
+</body>
+</html>
